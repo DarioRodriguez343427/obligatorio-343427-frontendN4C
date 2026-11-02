@@ -1,6 +1,6 @@
 import React from 'react'
 
-const registro = () => {
+const Registro = () => {
   return (
     <div>
       <p>desde registro</p>
@@ -8,4 +8,4 @@ const registro = () => {
   )
 }
 
-export default registro
+export default Registro

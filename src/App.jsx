@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux"
 import { cargarDisciplinasSlice } from "./redux/features/disciplinaSlice";
 import Contenido from "./components/Contenido";
+import Menu from "./components/Menu";
 
 
 function App() {
@@ -21,7 +22,7 @@ function App() {
   }, [dispatch]);
   return (
     <>
-      <Header/>
+      <Menu />
       <Contenido/>
     </>
   )

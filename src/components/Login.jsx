@@ -69,7 +69,7 @@ const Login = () => {
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               isInvalid={
-                formik.touched.identificador &&
+                formik.touched.identificador && //touched verifica si el usuario ya paso por el campo
                 Boolean(formik.errors.identificador)
               }
             />
@@ -99,7 +99,11 @@ const Login = () => {
           <Button
             variant="primary"
             type="submit"
-            disabled={formik.isSubmitting}
+            disabled={
+              formik.isSubmitting ||
+              formik.values.identificador.trim() === "" ||
+              formik.values.password === ""
+            }
           >
             {formik.isSubmitting ? "Ingresando..." : "Iniciar sesión"}
           </Button>
