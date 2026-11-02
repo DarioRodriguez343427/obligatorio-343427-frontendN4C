@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Capa_1" data-name="Capa 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 253.33 149.33">
+  <defs>
+    <style>
+      .cls-1 {
+        letter-spacing: -.02em;
+      }
+
+      .cls-2 {
+        letter-spacing: .04em;
+      }
+
+      .cls-3 {
+        letter-spacing: 0em;
+      }
+
+      .cls-4 {
+        fill: #1d1d1b;
+        font-size: 58.3px;
+      }
+
+      .cls-4, .cls-5 {
+        font-family: AcuminConcept-BlackItalic, 'Acumin Variable Concept';
+        font-style: italic;
+        font-variation-settings: 'wght' 800, 'wdth' 100, 'slnt' 12;
+        font-weight: 800;
+      }
+
+      .cls-6 {
+        letter-spacing: 0em;
+      }
+
+      .cls-7 {
+        letter-spacing: 0em;
+      }
+
+      .cls-5 {
+        font-size: 56.77px;
+      }
+
+      .cls-5, .cls-8 {
+        fill: #eec717;
+      }
+
+      .cls-9 {
+        letter-spacing: 0em;
+      }
+    </style>
+  </defs>
+  <g>
+    <text class="cls-4" transform="translate(11.92 129.35)"><tspan class="cls-1" x="0" y="0">G</tspan><tspan class="cls-3" x="41.45" y="0">Y</tspan><tspan class="cls-7" x="77.3" y="0">M</tspan></text>
+    <text class="cls-5" transform="translate(151.49 128.89)"><tspan class="cls-6" x="0" y="0">F</tspan><tspan class="cls-9" x="33.49" y="0">I</tspan><tspan class="cls-2" x="52.62" y="0">T</tspan></text>
+  </g>
+  <g>
+    <rect class="cls-8" x="97.57" y="34.78" width="58.29" height="13.49"/>
+    <rect class="cls-8" x="82.18" y="13.86" width="12.95" height="55.32" rx="2.89" ry="2.89"/>
+    <rect class="cls-8" x="158.02" y="13.86" width="12.95" height="55.32" rx="2.89" ry="2.89"/>
+    <rect class="cls-8" x="174.48" y="22.63" width="10.53" height="37.78" rx="2.89" ry="2.89"/>
+    <rect class="cls-8" x="69.23" y="22.63" width="10.53" height="37.78" rx="2.89" ry="2.89"/>
+    <rect class="cls-8" x="60.59" y="35.65" width="6.21" height="11.74" rx="1.7" ry="1.7"/>
+    <rect class="cls-8" x="186.89" y="35.65" width="6.21" height="11.74" rx="1.7" ry="1.7"/>
+  </g>
+</svg>
