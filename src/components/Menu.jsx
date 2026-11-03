@@ -1,6 +1,7 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { cancelarVencimiento } from '../utils/sesion';
+import { Col, Container, Row } from 'react-bootstrap';
 
 const Menu = () => {
   
@@ -13,10 +14,16 @@ const Menu = () => {
   }
 
   return (
-    <div className='menu'>
-      <p>desde menu</p>
-      <button onClick={handleCerrarSesion}>Cerrar sesion</button>
-    </div>
+    <Container>
+      <Row style={{}}>
+        <Col>
+          <p>desde menu</p>
+        </Col>
+        <Col>
+          <button onClick={handleCerrarSesion}>Cerrar sesion</button>
+        </Col>
+      </Row>
+    </Container>
   )
 }
 
