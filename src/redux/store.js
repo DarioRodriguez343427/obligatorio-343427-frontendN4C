@@ -1,8 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit'
-import disciplinaSlice from "./features/disciplinaSlice"
+import clasesSlice from './features/clasesSlice.js'
 
 export const store = configureStore({
     reducer: {
-        disciplinaSlice
+        clasesSlice,
     },
 })

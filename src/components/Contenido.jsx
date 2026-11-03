@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import Clases from './Clases'
 import { useDispatch } from 'react-redux';
 import { obtenerClasesApi } from '../services/clasesServices';
-import { cargarClasesSlice } from '../redux/features/claseSlice';
+import { cargarClasesInicialesSlice } from '../redux/features/clasesSlice';
 import { Col, Container, Row } from 'react-bootstrap';
 import Grafica from './Grafica';
 
@@ -20,7 +20,7 @@ const Contenido = () => {
               //me traigo la lista desde el services donde axios le pega al endpoint
               const listaClases = await obtenerClasesApi(controller.signal);
               //le paso a redux la lista para que la cargue en su store
-              dispatch(cargarClasesSlice(listaClases));
+              dispatch(cargarClasesInicialesSlice(listaClases));
               console.log(listaClases);
             }catch(error){
               console.log(error);
