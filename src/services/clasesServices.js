@@ -1,34 +1,70 @@
-import axios from "axios";
+import api, { validarRespuesta } from "./adminApi";
 
-const baseURL = "https://obligatorio-343427-backend-n4-c.vercel.app/api/v1";
+const validarClase = (clase) => {
+  if (!clase || !clase.id) return false;
+  if (typeof clase.nombre !== "string") return false;
+  if (typeof clase.descripcion !== "string") return false;
+  if (!clase.disciplina?.id || typeof clase.disciplina.nombre !== "string") return false;
+  return true;
+};
 
-const api = axios.create({
-    baseURL,
-    headers: {
-        "Content-Type": "application/json"
-    }
-});
+const validarListadoClases = (datos) => {
+  if (!datos || !Array.isArray(datos.clases)) return false;
+  if (!Number.isInteger(datos.pagina) || datos.pagina < 1) return false;
+  if (!Number.isInteger(datos.limite) || datos.limite < 1 || datos.limite > 100) return false;
+  if (!Number.isInteger(datos.total) || datos.total < 0) return false;
+  if (datos.totalPaginas !== Math.ceil(datos.total / datos.limite)) return false;
 
-api.interceptors.request.use((config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-});
+  for (const clase of datos.clases) {
+    if (!validarClase(clase)) return false;
+  }
+  return true;
+};
 
+export const crearClaseApi = async (datos) => {
+  const respuesta = await api.post("/clases", datos);
+  return validarRespuesta(respuesta, 201, validarClase);
+};
 
-export const obtenerClasesApi = async (signal, pagina= 1, limite = 2) => {
-    const response  = await api.get(
-        "/clases", {
-            signal,
-            params:{
-                pagina,
-                limite
-            }
-        }
-    );
+export const actualizarClaseApi = async (id, datos) => {
+  const respuesta = await api.patch(`/clases/${id}`, datos);
+  const clase = validarRespuesta(respuesta, 200, validarClase);
+  if (clase.id !== id) throw new Error("El servidor devolvió otra clase.");
+  return clase;
+};
 
-    const clases = response.data;
-    return clases;
-}
+export const eliminarClaseApi = async (id) => {
+  const respuesta = await api.delete(`/clases/${id}`);
+  if (respuesta.status !== 204) {
+    throw new Error("El servidor no confirmó la eliminación.");
+  }
+};
+
+export const obtenerClasesApi = async (signal, pagina = 1, limite = 10) => {
+  const respuesta = await api.get("/clases", {
+    signal,
+    params: { pagina, limite },
+  });
+  const datos = validarRespuesta(respuesta, 200, validarListadoClases);
+
+  // Guardamos solamente los campos que necesita el listado.
+  const clases = datos.clases.map((clase) => {
+    return {
+      id: clase.id,
+      nombre: clase.nombre,
+      descripcion: clase.descripcion,
+      disciplina: {
+        id: clase.disciplina.id,
+        nombre: clase.disciplina.nombre,
+      },
+    };
+  });
+
+  return {
+    clases,
+    pagina: datos.pagina,
+    limite: datos.limite,
+    total: datos.total,
+    totalPaginas: datos.totalPaginas,
+  };
+};
