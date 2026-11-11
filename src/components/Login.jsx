@@ -31,8 +31,8 @@ const Login = () => {
 
   const formik = useFormik({
     initialValues: {
-      identificador: "usuario625503",
-      password: "cliente1",
+      identificador: "",
+      password: "",
     },
 
     validationSchema: esquemaLogin,
