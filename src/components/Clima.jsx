@@ -68,7 +68,7 @@ const Clima = () => {
   };
 
   return (
-    <Card className="mb-3">
+    <Card className="panel-clima">
       <Card.Body>
         <Card.Title as="h2">Pronóstico del clima</Card.Title>
         <p>Consultá el pronóstico para la capital del departamento, desde hoy hasta los próximos 15 días.</p>

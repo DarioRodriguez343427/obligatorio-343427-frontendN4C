@@ -19,12 +19,11 @@ import {
 import { esquemaDisciplina } from "../utils/validacionesAdmin";
 import { mensajeErrorApi } from "../utils/erroresApi";
 
-const FilaDisciplina = ({ id }) => {
+const FilaDisciplina = ({ id, editando, onEditar, onCancelar }) => {
   const disciplina = useSelector((state) =>
     state.disciplinasSlice.find((d) => d.id === id),
   );
   const dispatch = useDispatch();
-  const [editando, setEditando] = useState(false);
   const [confirmando, setConfirmando] = useState(false);
   const [eliminando, setEliminando] = useState(false);
   const formik = useFormik({
@@ -43,7 +42,7 @@ const FilaDisciplina = ({ id }) => {
           descripcion: valores.descripcion.trim(),
         });
         dispatch(actualizarDisciplinaSlice(actualizada));
-        setEditando(false);
+        onCancelar(id);
         toast.success("Disciplina actualizada");
       } catch (error) {
         toast.error(mensajeErrorApi(error));
@@ -55,14 +54,14 @@ const FilaDisciplina = ({ id }) => {
   const handlerEditar = () => {
     formik.resetForm();
     setConfirmando(false);
-    setEditando(true);
+    onEditar(id);
   };
   const handlerGuardar = () => {
     if (!formik.isSubmitting) formik.submitForm();
   };
   const handlerCancelar = () => {
     formik.resetForm();
-    setEditando(false);
+    onCancelar(id);
   };
   const handlerConfirmar = () => setConfirmando(true);
   const handlerCancelarEliminar = () => setConfirmando(false);
@@ -83,7 +82,7 @@ const FilaDisciplina = ({ id }) => {
   };
   if (!disciplina) return null;
   return (
-    <li className="mb-3">
+    <li className="discipline-row">
       {editando ? (
         <Form onSubmit={formik.handleSubmit} noValidate>
           <fieldset disabled={formik.isSubmitting}>
@@ -119,14 +118,14 @@ const FilaDisciplina = ({ id }) => {
                 {formik.errors.descripcion}
               </Form.Control.Feedback>
             </Form.Group>
-            <button
+            <button className="btn btn-primary btn-sm"
               type="button"
               onClick={handlerGuardar}
               disabled={!formik.isValid || formik.isSubmitting}
             >
               Guardar
             </button>
-            <button type="button" onClick={handlerCancelar}>
+            <button className="btn btn-outline-secondary btn-sm" type="button" onClick={handlerCancelar}>
               Cancelar
             </button>
           </fieldset>
@@ -134,16 +133,16 @@ const FilaDisciplina = ({ id }) => {
       ) : (
         <>
           <span>
-            {disciplina.nombre}: {disciplina.descripcion}
+            <strong>{disciplina.nombre}</strong><small>{disciplina.descripcion}</small>
           </span>{" "}
-          <button
+          <button className="btn btn-outline-primary btn-sm"
             type="button"
             onClick={handlerEditar}
             disabled={eliminando || confirmando}
           >
             Editar
           </button>{" "}
-          <button
+          <button className="btn btn-outline-danger btn-sm"
             type="button"
             onClick={handlerConfirmar}
             disabled={eliminando || confirmando}
@@ -155,10 +154,10 @@ const FilaDisciplina = ({ id }) => {
       {confirmando && (
         <div role="group" aria-label="Confirmar eliminación de disciplina">
           <p>¿Eliminar la disciplina {disciplina.nombre}?</p>
-          <button type="button" onClick={handlerEliminar} disabled={eliminando}>
+          <button className="btn btn-outline-danger btn-sm" type="button" onClick={handlerEliminar} disabled={eliminando}>
             {eliminando ? "Eliminando..." : "Confirmar eliminación"}
           </button>
-          <button
+          <button className="btn btn-outline-secondary btn-sm"
             type="button"
             onClick={handlerCancelarEliminar}
             disabled={eliminando}
@@ -172,6 +171,9 @@ const FilaDisciplina = ({ id }) => {
 };
 
 const DisciplinasAdmin = () => {
+  const [idEditando, setIdEditando] = useState(null);
+  const handlerEditarDisciplina = (id) => setIdEditando(id);
+  const handlerCancelarEdicion = (id) => setIdEditando((actual) => actual === id ? null : actual);
   const dispatch = useDispatch();
   const disciplinas = useSelector((state) => state.disciplinasSlice);
   const [cargando, setCargando] = useState(true);
@@ -221,23 +223,10 @@ const DisciplinasAdmin = () => {
     if (!formik.isSubmitting) formik.submitForm();
   };
   return (
-    <Card className="mb-3">
+    <Card className="panel-disciplinas">
       <Card.Body>
         <Card.Title as="h2">Disciplinas</Card.Title>
-        {cargando ? (
-          <p>Cargando disciplinas...</p>
-        ) : errorCarga ? (
-          <p role="alert">{errorCarga}</p>
-        ) : disciplinas.length === 0 ? (
-          <p>No hay disciplinas.</p>
-        ) : (
-          <ul>
-            {disciplinas.map((disciplina) => (
-              <FilaDisciplina key={disciplina.id} id={disciplina.id} />
-            ))}
-          </ul>
-        )}
-        <h3>Agregar disciplina</h3>
+        <h3 className="section-divider">Agregar disciplina</h3>
         <Form onSubmit={formik.handleSubmit} noValidate>
           <fieldset
             disabled={formik.isSubmitting || cargando || Boolean(errorCarga)}
@@ -277,7 +266,7 @@ const DisciplinasAdmin = () => {
                 {formik.errors.descripcion}
               </Form.Control.Feedback>
             </Form.Group>
-            <button
+            <button className="btn btn-primary btn-sm"
               type="button"
               onClick={handlerAgregar}
               disabled={!formik.isValid || formik.isSubmitting}
@@ -286,6 +275,21 @@ const DisciplinasAdmin = () => {
             </button>
           </fieldset>
         </Form>
+        <h3 className="section-divider">Disciplinas disponibles</h3>
+        {cargando ? (
+          <p>Cargando disciplinas...</p>
+        ) : errorCarga ? (
+          <p role="alert">{errorCarga}</p>
+        ) : disciplinas.length === 0 ? (
+          <p>No hay disciplinas.</p>
+        ) : (
+          <ul className="discipline-list">
+            {disciplinas.map((disciplina) => (
+              <FilaDisciplina key={`${disciplina.id}-${idEditando === disciplina.id}`} id={disciplina.id}
+                editando={idEditando === disciplina.id} onEditar={handlerEditarDisciplina} onCancelar={handlerCancelarEdicion} />
+            ))}
+          </ul>
+        )}
       </Card.Body>
     </Card>
   );

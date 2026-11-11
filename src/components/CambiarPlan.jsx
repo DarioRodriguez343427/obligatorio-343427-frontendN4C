@@ -40,7 +40,7 @@ const CambiarPlan = () => {
   };
 
   return (
-    <Card className="mb-3">
+    <Card className="panel-plan">
       <Card.Body>
         <Card.Title as="h2">Mi plan: {plan === "premium" ? "Premium" : "Plus"}</Card.Title>
         {plan === "plus" && (

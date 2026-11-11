@@ -7,7 +7,7 @@ const InformeUso = () => {
   const plan = useSelector((state) => state.clienteSlice.plan);
   const porcentaje = Math.round(total / 4 * 100);
   return (
-    <Card className="mb-3"><Card.Body>
+    <Card className="panel-uso"><Card.Body>
       <Card.Title as="h2">Uso de clases</Card.Title>
       {!cargada ? <p>Cargando uso...</p> : plan === 'plus' ? <>
         <p>{total} de 4 clases utilizadas ({porcentaje}%).</p>

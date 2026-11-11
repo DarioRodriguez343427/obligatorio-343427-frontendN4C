@@ -197,7 +197,7 @@ const DetalleUsuarioAdmin = () => {
       </Form>
       {editando ? (
         <>
-          <button
+          <button className="btn btn-primary btn-sm"
             key="guardar"
             type="button"
             onClick={handlerGuardar}
@@ -205,13 +205,13 @@ const DetalleUsuarioAdmin = () => {
           >
             {formik.isSubmitting ? "Guardando..." : "Guardar"}
           </button>{" "}
-          <button type="button" onClick={handlerCancelar} disabled={ocupado}>
+          <button className="btn btn-outline-secondary btn-sm" type="button" onClick={handlerCancelar} disabled={ocupado}>
             Cancelar
           </button>
         </>
       ) : (
         <>
-          <button
+          <button className="btn btn-outline-primary btn-sm"
             key="editar"
             type="button"
             onClick={handlerEditar}
@@ -219,7 +219,7 @@ const DetalleUsuarioAdmin = () => {
           >
             Editar
           </button>{" "}
-          <button
+          <button className="btn btn-outline-danger btn-sm"
             type="button"
             onClick={handlerConfirmar}
             disabled={ocupado || confirmando || usuario.id === idActual}
@@ -239,10 +239,10 @@ const DetalleUsuarioAdmin = () => {
           <p>
             ¿Eliminar a {usuario.name}? También se eliminará su foto de perfil.
           </p>
-          <button type="button" onClick={handlerEliminar} disabled={ocupado}>
+          <button className="btn btn-outline-danger btn-sm" type="button" onClick={handlerEliminar} disabled={ocupado}>
             {eliminando ? "Eliminando..." : "Confirmar eliminación"}
           </button>{" "}
-          <button
+          <button className="btn btn-outline-secondary btn-sm"
             type="button"
             onClick={handlerCancelarEliminar}
             disabled={ocupado}
@@ -317,7 +317,7 @@ const UsuariosAdmin = () => {
   };
   const seleccionExiste = usuarios.some((u) => u.id === idSeleccionado);
   return (
-    <Card className="mb-3">
+    <Card className="panel-usuarios">
       <Card.Body>
         <Card.Title as="h2">Usuarios</Card.Title>
         <Form.Group className="mb-3" controlId="admin-selector-usuario">

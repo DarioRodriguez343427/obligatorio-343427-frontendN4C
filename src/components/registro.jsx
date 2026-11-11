@@ -33,6 +33,11 @@ const Registro = () => {
   const handlerIrLogin = () => {
     navigate('/login');
   };
+  const [passwordsVisibles, setPasswordsVisibles] = useState({ password: false, confirmPassword: false });
+  const handlerAlternarPassword = (evento) => {
+    const campo = evento.currentTarget.name;
+    setPasswordsVisibles((actual) => ({ ...actual, [campo]: !actual[campo] }));
+  };
   const [errorFoto, setErrorFoto] = useState('');
   const [leyendoFoto, setLeyendoFoto] = useState(false);
   const formik = useFormik({
@@ -74,7 +79,7 @@ const Registro = () => {
     formik.setFieldValue('image', '');
     setErrorFoto('');
     if (!foto) return;
-    
+
     //validamos que el tipo de imagen y tamaño sean permitidos, par no tener problemas de compatibilidad
     if (!tipos.includes(foto.type)) { setErrorFoto('Usá una imagen JPEG, PNG o WebP'); return; }
     if (foto.size > 2 * 1024 * 1024) { setErrorFoto('La foto no puede superar los 2 MiB'); return; }
@@ -91,18 +96,35 @@ const Registro = () => {
   };
 
   return (
-    <Card style={{ maxWidth: '28rem', margin: '1rem auto' }}>
+    <main className="auth-page auth-registro">
+    <Card className="auth-card">
       <Card.Body>
-        <Card.Title>Registro de usuario</Card.Title>
+        <img className="auth-logo" src="/logo.svg" alt="GYM FIT" />
+        <h1>Creá tu cuenta</h1>
+        <p className="auth-intro">Tu próximo entrenamiento empieza acá.</p>
+
         <Form onSubmit={handlerEvitarEnvio} noValidate>
           <fieldset disabled={formik.isSubmitting}>
             {campos.map(([name, label, type, autoComplete]) => (
               <Form.Group className="mb-3" controlId={`registro-${name}`} key={name}>
                 <Form.Label>{label}</Form.Label>
-                <Form.Control name={name} type={type} autoComplete={autoComplete} value={formik.values[name]}
+                <div className={type === 'password' ? 'password-field' : undefined}>
+                <Form.Control name={name} type={type === 'password' && passwordsVisibles[name] ? 'text' : type} autoComplete={autoComplete} value={formik.values[name]}
                   onChange={formik.handleChange} onBlur={formik.handleBlur}
                   isInvalid={Boolean(formik.touched[name] && formik.errors[name])} />
+                {type === 'password' && (
+                  <button type="button" className="password-toggle" name={name} onClick={handlerAlternarPassword}
+                    aria-label={`${passwordsVisibles[name] ? 'Ocultar' : 'Mostrar'} ${label.toLowerCase()}`}
+                    aria-pressed={passwordsVisibles[name]} aria-controls={`registro-${name}`}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
+                      <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
+                      <circle cx="12" cy="12" r="3" />
+                      {passwordsVisibles[name] && <path d="m3 3 18 18" />}
+                    </svg>
+                  </button>
+                )}
                 <Form.Control.Feedback type="invalid">{formik.errors[name]}</Form.Control.Feedback>
+                </div>
               </Form.Group>
             ))}
             <Form.Group className="mb-3" controlId="registro-foto">
@@ -111,15 +133,16 @@ const Registro = () => {
               <Form.Control.Feedback type="invalid">{errorFoto}</Form.Control.Feedback>
               <Form.Text>JPEG, PNG o WebP. Máximo 2 MiB.</Form.Text>
             </Form.Group>
-            {formik.values.image && <img src={formik.values.image} alt="Vista previa de la foto de perfil" style={{ maxWidth: '150px', maxHeight: '150px', display: 'block', marginBottom: '1rem' }} />}
+            {formik.values.image && <img src={formik.values.image} alt="Vista previa de la foto de perfil" className="profile-preview" />}
             <button type="button" className="btn btn-primary" onClick={handlerRegistrarse} disabled={!formik.dirty || !formik.isValid || formik.isSubmitting || leyendoFoto || Boolean(errorFoto)}>
               {formik.isSubmitting ? 'Registrando...' : leyendoFoto ? 'Leyendo foto...' : 'Registrarse'}
             </button>
           </fieldset>
         </Form>
-        <button type="button" onClick={handlerIrLogin} disabled={formik.isSubmitting}>Volver a iniciar sesión</button>
+        <button type="button" className="btn btn-outline-secondary auth-secondary" onClick={handlerIrLogin} disabled={formik.isSubmitting}>Volver a iniciar sesión</button>
       </Card.Body>
     </Card>
+    </main>
   );
 };
 export default Registro;

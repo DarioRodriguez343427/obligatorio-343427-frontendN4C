@@ -2,7 +2,15 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Alert, Card, Form } from "react-bootstrap";
 import { toast } from "react-toastify";
-import DataTable from "react-data-table-component";
+import DataTable, { createTheme } from "react-data-table-component";
+
+createTheme("gym", {
+  text: { primary: "#eef0f3", secondary: "#adb5c2" },
+  background: { default: "#191d23" },
+  context: { background: "#242a32", text: "#eef0f3" },
+  divider: { default: "#303640" },
+  action: { button: "#f5c518", hover: "#303640", disabled: "#646b77" },
+}, "dark");
 import { obtenerClasesApi, eliminarClaseApi } from "../services/clasesServices";
 import {
   cargarClasesInicialesSlice,
@@ -151,7 +159,7 @@ const Clases = () => {
 
   return (
     <>
-        <Card className="mb-3">
+        <Card className="panel-clases">
           <Card.Body>
             <Card.Title as="h2">Mis clases</Card.Title>
             <Form.Group className="mb-3" controlId="filtro-clases">
@@ -176,6 +184,7 @@ const Clases = () => {
             )}
             {!errorCarga && (
               <DataTable
+                theme="gym"
                 key={`${pagina}-${limite}`}
                 columns={columnas}
                 data={clasesFiltradas}
@@ -194,7 +203,7 @@ const Clases = () => {
                 noDataComponent={filtro.trim() ? "No hay coincidencias en esta página." : "Todavía no tenés clases."}
                 responsive
                 striped
-                highlightOnHover
+                highlightOnHover={false}
               />
             )}
           </Card.Body>
