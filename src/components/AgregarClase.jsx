@@ -134,7 +134,7 @@ const AgregarClase = () => {
   const deshabilitado = bloqueado || cargando || Boolean(errorCarga) || disciplinas.length === 0 || (!clase && limiteAlcanzado);
 
   return (
-    <Card className="mb-3">
+    <Card className="panel-agregar">
       <Card.Body>
         <Card.Title as="h2">{clase ? "Editar clase" : "Agregar clase"}</Card.Title>
         {!clase && limiteAlcanzado && <Alert variant="info">Tu plan Plus permite hasta 4 clases. Podés editar o eliminar las que ya tenés.</Alert>}

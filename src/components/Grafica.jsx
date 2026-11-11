@@ -14,14 +14,14 @@ const Grafica = () => {
   }
   const datos = {
     labels: Object.keys(cantidades),
-    datasets: [{ label: 'Cantidad de clases', data: Object.values(cantidades), backgroundColor: '#0d6efd' }],
+    datasets: [{ label: 'Cantidad de clases', data: Object.values(cantidades), backgroundColor: ['#f5c518', '#77818e', '#4e5968'], borderRadius: 5, maxBarThickness: 48 }],
   };
   return (
-    <Card className="mb-3"><Card.Body>
+    <Card className="panel-grafica"><Card.Body>
       <Card.Title as="h2">Clases por disciplina</Card.Title>
       <p>Datos de la página actual, antes del filtro por nombre.</p>
       {!cargada ? <p>Cargando gráfica...</p> : clases.length === 0 ? <p>No hay clases para graficar.</p> : (
-        <Bar data={datos} options={{ responsive: true, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }} />
+        <div className="chart-container"><Bar data={datos} options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: "#adb5c2" }, grid: { display: false } }, y: { beginAtZero: true, ticks: { precision: 0, color: "#adb5c2" }, grid: { color: "#303640" } } } }} /></div>
       )}
     </Card.Body></Card>
   );

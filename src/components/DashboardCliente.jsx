@@ -7,14 +7,17 @@ import CambiarPlan from './CambiarPlan';
 import Clima from './Clima';
 
 const DashboardCliente = () => (
-  <Container as="main">
-    <h1>Dashboard del cliente</h1>
+  <Container as="main" className="dashboard dashboard-cliente">
+    <h1>Mi entrenamiento</h1>
+    <p className="page-intro">Organizá tus clases y seguí tu actividad.</p>
+    <div className="cliente-grid">
     <InformeUso />
     <CambiarPlan />
     <Clases />
     <AgregarClase />
     <Grafica />
     <Clima />
+    </div>
   </Container>
 );
 export default DashboardCliente;

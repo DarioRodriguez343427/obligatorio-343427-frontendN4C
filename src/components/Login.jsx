@@ -71,8 +71,12 @@ const Login = () => {
   };
 
   return (
-    <Card style={{ width: "18rem", justifyContent: "center" }}>
+    <main className="auth-page auth-login">
+    <Card className="auth-card">
       <Card.Body>
+        <img className="auth-logo" src="/logo.svg" alt="GYM FIT" />
+        <h1>Bienvenido de nuevo</h1>
+        <p className="auth-intro">Ingresá a tu espacio de entrenamiento.</p>
         <Form onSubmit={handlerEvitarEnvio} noValidate>
           <Form.Group className="mb-3" controlId="identificador">
             <Form.Label>Usuario</Form.Label>
@@ -124,11 +128,12 @@ const Login = () => {
             {formik.isSubmitting ? "Ingresando..." : "Iniciar sesión"}
           </button>
         </Form>
-        <button type="button" onClick={handlerIrRegistro} disabled={formik.isSubmitting}>
+        <button type="button" className="btn btn-outline-secondary auth-secondary" onClick={handlerIrRegistro} disabled={formik.isSubmitting}>
           Registrarse
         </button>
       </Card.Body>
     </Card>
+    </main>
   );
 };
 

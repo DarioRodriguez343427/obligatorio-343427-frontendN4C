@@ -6,6 +6,7 @@
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
-  background: rgba(255, 255, 255, 0.72);
-  color: #212529;
+  background: rgba(10, 12, 15, 0.82);
+  color: #f5c518;
+  backdrop-filter: blur(4px);
 }
