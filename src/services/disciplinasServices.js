@@ -1,29 +1,24 @@
-import axios from "axios";
+import api, { validarRespuesta } from "./adminApi.js";
 
-const baseURL = "https://obligatorio-343427-backend-n4-c.vercel.app/api/v1";
+const esDisciplina = (dato) =>
+  Boolean(dato?.id && typeof dato.nombre === "string");
 
-const api = axios.create({
-    baseURL,
-    headers: {
-        "Content-Type": "application/json"
-    }
-});
+export const obtenerDisciplinasApi = async (signal) =>
+  validarRespuesta(
+    await api.get("/disciplinas", { signal }),
+    200,
+    (datos) => Array.isArray(datos) && datos.every(esDisciplina),
+  );
 
-api.interceptors.request.use((config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-});
+export const crearDisciplinaApi = async (datos) =>
+  validarRespuesta(await api.post("/disciplinas", datos), 201, esDisciplina);
 
-export const obtenerDisciplinasApi = async (signal) => {
-    const response = await axios.get(
-        `${urlBase}/disciplinas`, {
-            signal: signal
-        }
-    );
-    const disciplinas = response.data;
-    console.log('disciplinas: ', disciplinas);
-    return disciplinas;
-}
+export const actualizarDisciplinaApi = async (id, datos) =>
+  validarRespuesta(
+    await api.patch(`/disciplinas/${id}`, datos),
+    200,
+    (dato) => esDisciplina(dato) && dato.id === id,
+  );
+  
+export const eliminarDisciplinaApi = async (id) =>
+  validarRespuesta(await api.delete(`/disciplinas/${id}`), 204, () => true);
