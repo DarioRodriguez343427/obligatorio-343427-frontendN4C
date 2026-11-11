@@ -1,5 +1,7 @@
 import api, { validarRespuesta } from "./adminApi.js";
 
+const clasesURL = import.meta.env.VITE_API_URL_BACKEND_CLASES;
+
 const validarClase = (clase) => {
   if (!clase || !clase.id) return false;
   if (typeof clase.nombre !== "string") return false;
@@ -27,26 +29,26 @@ const validarListadoClases = (datos) => {
 };
 
 export const crearClaseApi = async (datos) => {
-  const respuesta = await api.post("/clases", datos);
+  const respuesta = await api.post(clasesURL, datos);
   return resumirClase(validarRespuesta(respuesta, 201, validarClase));
 };
 
 export const actualizarClaseApi = async (id, datos) => {
-  const respuesta = await api.patch(`/clases/${id}`, datos);
+  const respuesta = await api.patch(`${clasesURL}/${id}`, datos);
   const clase = validarRespuesta(respuesta, 200, validarClase);
   if (clase.id !== id) throw new Error("El servidor devolvió otra clase.");
   return resumirClase(clase);
 };
 
 export const eliminarClaseApi = async (id) => {
-  const respuesta = await api.delete(`/clases/${id}`);
+  const respuesta = await api.delete(`${clasesURL}/${id}`);
   if (respuesta.status !== 204) {
     throw new Error("El servidor no confirmó la eliminación.");
   }
 };
 
 export const obtenerClasesApi = async (signal, pagina = 1, limite = 10) => {
-  const respuesta = await api.get("/clases", {
+  const respuesta = await api.get(clasesURL, {
     signal,
     params: { pagina, limite },
   });

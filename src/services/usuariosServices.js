@@ -1,4 +1,6 @@
 import api, { validarRespuesta } from "./adminApi.js";
+
+const usuariosURL = import.meta.env.VITE_API_URL_BACKEND_USERS;
 const esUsuario = (dato) => Boolean(dato?.id && typeof dato.name === "string");
 
 const esDetalleUsuario = (dato) =>
@@ -20,7 +22,7 @@ const datosUsuario = ({
 
 export const obtenerUsuariosApi = async (signal) =>
     validarRespuesta(
-        await api.get("/users", { signal }),
+        await api.get(usuariosURL, { signal }),
         200,
         (datos) => Array.isArray(datos) && datos.every((dato) => dato?.id && typeof dato.username === "string"),
     ).map(({ id, username }) => ({ id, username }));
@@ -28,7 +30,7 @@ export const obtenerUsuariosApi = async (signal) =>
 export const obtenerUsuarioApi = async (id, signal) =>
     datosUsuario(
         validarRespuesta(
-            await api.get(`/users/${id}`, { signal }),
+            await api.get(`${usuariosURL}/${id}`, { signal }),
             200,
             (dato) => esDetalleUsuario(dato) && dato.id === id,
         ),
@@ -37,11 +39,11 @@ export const obtenerUsuarioApi = async (id, signal) =>
 export const actualizarUsuarioApi = async (id, datos) =>
     datosUsuario(
         validarRespuesta(
-            await api.patch(`/users/${id}`, datos),
+            await api.patch(`${usuariosURL}/${id}`, datos),
             200,
             (dato) => esDetalleUsuario(dato) && dato.id === id,
         ),
     );
     
 export const eliminarUsuarioApi = async (id) =>
-    validarRespuesta(await api.delete(`/users/${id}`), 204, () => true);
+    validarRespuesta(await api.delete(`${usuariosURL}/${id}`), 204, () => true);

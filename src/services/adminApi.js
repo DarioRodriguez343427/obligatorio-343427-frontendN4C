@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const adminApi = axios.create({
-  baseURL: 'https://obligatorio-343427-backend-n4-c.vercel.app/api/v1',
+  baseURL: import.meta.env.VITE_API_URL_BACKEND,
   headers: { 'Content-Type': 'application/json' },
 });
 adminApi.interceptors.request.use((config) => {
