@@ -3,6 +3,7 @@ import { useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import Clases from "./Clases";
 import CambiarPlan from "./CambiarPlan";
+import Clima from "./Clima";
 
 const DashboardCliente = () => {
   const [plan, setPlan] = useState(() => {
@@ -17,6 +18,7 @@ const DashboardCliente = () => {
       <h1>Dashboard del cliente</h1>
       <CambiarPlan plan={plan} onActualizado={setPlan} />
       <Clases planActual={plan} />
+      <Clima />
     </Container>
   );
 };
