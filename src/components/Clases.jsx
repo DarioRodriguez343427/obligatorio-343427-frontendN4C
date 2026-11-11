@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Alert, Card, Col, Row } from "react-bootstrap";
-import { jwtDecode } from "jwt-decode";
+import { Alert, Card, Form } from "react-bootstrap";
 import { toast } from "react-toastify";
-import AgregarClase from "./AgregarClase";
 import DataTable from "react-data-table-component";
-import { obtenerClasesApi, crearClaseApi, actualizarClaseApi, eliminarClaseApi } from "../services/clasesServices";
+import { obtenerClasesApi, eliminarClaseApi } from "../services/clasesServices";
 import {
   cargarClasesInicialesSlice,
-  limpiarClasesSlice,
+  limpiarClasesSlice, solicitarPaginaSlice, solicitarLimiteSlice, seleccionarClaseSlice, eliminarClaseSlice, completarPaginaSlice,
 } from "../redux/features/clasesSlice";
 import {
   aumentarContadorPeticiones,
@@ -27,26 +25,16 @@ const opcionesPaginado = {
   rangeSeparatorText: "de",
 };
 
-const Clases = ({ planActual }) => {
+const Clases = () => {
   const dispatch = useDispatch();
-  const { clases, total } = useSelector((state) => state.clasesSlice);
-  const [pagina, setPagina] = useState(1);
-  const [limite, setLimite] = useState(10);
+  const { clases, total, pagina: paginaActual, limite: limiteActual, cargada, paginaSolicitada: pagina, limiteSolicitado: limite } = useSelector((state) => state.clasesSlice);
+  const [filtro, setFiltro] = useState("");
   const [cargando, setCargando] = useState(true);
   const [errorCarga, setErrorCarga] = useState("");
   const [intento, setIntento] = useState(0);
-  const [claseEditando, setClaseEditando] = useState(null);
   const [claseEliminar, setClaseEliminar] = useState(null);
-  const [guardando, setGuardando] = useState(false);
   const [eliminando, setEliminando] = useState(false);
-  let plan;
-  try {
-    plan = jwtDecode(localStorage.getItem("token")).plan;
-  } catch {
-    // El dashboard verifica la sesión.
-  }
-  const limiteAlcanzado = (planActual ?? plan) === "plus" && total >= 4;
-  const ocupado = cargando || guardando || eliminando;
+  const ocupado = cargando || eliminando;
 
   useEffect(() => {
     dispatch(limpiarClasesSlice());
@@ -54,6 +42,7 @@ const Clases = ({ planActual }) => {
   }, [dispatch]);
 
   useEffect(() => {
+    if (cargada && pagina === paginaActual && limite === limiteActual && intento === 0) return;
     const controller = new AbortController();
 
     const cargarClases = async () => {
@@ -67,10 +56,12 @@ const Clases = ({ planActual }) => {
           // Puede pasar si se elimina la última clase de la última página.
           const ultimaPagina = Math.max(1, datos.totalPaginas);
           if (pagina > ultimaPagina) {
-            setPagina(ultimaPagina);
+            dispatch(solicitarPaginaSlice(ultimaPagina));
             return;
           }
+          setCargando(false);
           dispatch(cargarClasesInicialesSlice(datos));
+          setIntento(0);
         }
       } catch (error) {
         if (!controller.signal.aborted) {
@@ -84,61 +75,31 @@ const Clases = ({ planActual }) => {
 
     cargarClases();
     return () => controller.abort();
-  }, [dispatch, pagina, limite, intento]);
+  }, [dispatch, pagina, limite, intento, cargada, paginaActual, limiteActual]);
+
+  const handlerFiltrar = (evento) => setFiltro(evento.target.value);
+  const clasesFiltradas = clases.filter((clase) => clase.nombre.toLowerCase().includes(filtro.trim().toLowerCase()));
 
   const handlerCambiarPagina = (nuevaPagina) => {
-    setPagina(nuevaPagina);
+    setIntento(0);
+    dispatch(solicitarPaginaSlice(nuevaPagina));
   };
 
-  const handlerCambiarCantidad = (nuevaCantidad, nuevaPagina) => {
-    setLimite(nuevaCantidad);
-    setPagina(nuevaPagina);
+  const handlerCambiarCantidad = (nuevaCantidad) => {
+    setIntento(0);
+    dispatch(solicitarLimiteSlice(nuevaCantidad));
   };
-
   const handlerReintentar = () => {
     setIntento(intento + 1);
   };
 
-  const refrescarListado = () => {
-    setCargando(true);
-    setIntento((valor) => valor + 1);
-  };
-
   const handlerEditar = (clase) => {
     setClaseEliminar(null);
-    setClaseEditando(clase);
+    dispatch(seleccionarClaseSlice(clase));
   };
 
-  const handlerCancelarEdicion = () => setClaseEditando(null);
   const handlerConfirmarEliminar = (clase) => setClaseEliminar(clase);
   const handlerCancelarEliminar = () => setClaseEliminar(null);
-
-  const handlerGuardar = async (datos) => {
-    if (ocupado || errorCarga || (!claseEditando && limiteAlcanzado)) return false;
-    setGuardando(true);
-    dispatch(aumentarContadorPeticiones());
-    try {
-      if (claseEditando) {
-        await actualizarClaseApi(claseEditando.id, datos);
-        toast.success("Clase actualizada");
-      } else {
-        await crearClaseApi(datos);
-        toast.success("Clase agregada");
-      }
-      setClaseEditando(null);
-      setClaseEliminar(null);
-      // Las clases nuevas aparecen primero en el orden del backend.
-      setPagina(1);
-      refrescarListado();
-      return true;
-    } catch (error) {
-      toast.error(mensajeErrorApi(error));
-      return false;
-    } finally {
-      dispatch(disminuirContadorPeticiones());
-      setGuardando(false);
-    }
-  };
 
   const handlerEliminar = async () => {
     if (ocupado || !claseEliminar) return;
@@ -146,9 +107,24 @@ const Clases = ({ planActual }) => {
     dispatch(aumentarContadorPeticiones());
     try {
       await eliminarClaseApi(claseEliminar.id);
-      if (claseEditando?.id === claseEliminar.id) setClaseEditando(null);
+      dispatch(eliminarClaseSlice(claseEliminar.id));
+      const nuevoTotal = Math.max(0, total - 1);
+      const ultimaPagina = Math.max(1, Math.ceil(nuevoTotal / limite));
+      if (pagina > ultimaPagina) {
+        dispatch(solicitarPaginaSlice(ultimaPagina));
+      } else {
+        const cantidadRestante = clases.length - 1;
+        const posicionSiguiente = (pagina - 1) * limite + cantidadRestante + 1;
+        if (cantidadRestante < limite && posicionSiguiente <= nuevoTotal) {
+          try {
+            const datos = await obtenerClasesApi(undefined, posicionSiguiente, 1);
+            dispatch(completarPaginaSlice(datos.clases[0]));
+          } catch (error) {
+            setErrorCarga("La clase se eliminó, pero no se pudo completar la página. " + mensajeErrorApi(error));
+          }
+        }
+      }
       toast.success("Clase eliminada");
-      refrescarListado();
     } catch (error) {
       toast.error(mensajeErrorApi(error));
     } finally {
@@ -174,11 +150,15 @@ const Clases = ({ planActual }) => {
   ];
 
   return (
-    <Row>
-      <Col lg={8}>
+    <>
         <Card className="mb-3">
           <Card.Body>
             <Card.Title as="h2">Mis clases</Card.Title>
+            <Form.Group className="mb-3" controlId="filtro-clases">
+              <Form.Label>Filtrar por nombre en esta página</Form.Label>
+              <Form.Control value={filtro} onChange={handlerFiltrar} />
+              <Form.Text>El filtro se aplica a las clases de la página visible.</Form.Text>
+            </Form.Group>
             {claseEliminar && (
               <Alert variant="warning">
                 <p>¿Eliminar la clase {claseEliminar.nombre}?</p>
@@ -198,7 +178,7 @@ const Clases = ({ planActual }) => {
               <DataTable
                 key={`${pagina}-${limite}`}
                 columns={columnas}
-                data={clases}
+                data={clasesFiltradas}
                 keyField="id"
                 pagination
                 paginationServer
@@ -211,7 +191,7 @@ const Clases = ({ planActual }) => {
                 onChangeRowsPerPage={handlerCambiarCantidad}
                 progressPending={cargando}
                 progressComponent={<p role="status">Cargando clases...</p>}
-                noDataComponent="Todavía no tenés clases."
+                noDataComponent={filtro.trim() ? "No hay coincidencias en esta página." : "Todavía no tenés clases."}
                 responsive
                 striped
                 highlightOnHover
@@ -219,17 +199,7 @@ const Clases = ({ planActual }) => {
             )}
           </Card.Body>
         </Card>
-      </Col>
-      <Col lg={4}>
-        <AgregarClase
-          clase={claseEditando}
-          bloqueado={ocupado || Boolean(errorCarga) || Boolean(claseEliminar)}
-          limiteAlcanzado={limiteAlcanzado}
-          onGuardar={handlerGuardar}
-          onCancelar={handlerCancelarEdicion}
-        />
-      </Col>
-    </Row>
+    </>
   );
 };
 

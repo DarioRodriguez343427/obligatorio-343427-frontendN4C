@@ -1,5 +1,5 @@
 import { jwtDecode } from "jwt-decode";
-import api, { validarRespuesta } from "./adminApi";
+import api, { validarRespuesta } from "./adminApi.js";
 
 const validarCambioPlan = (datos) => {
   if (!datos?.user?.id || datos.user.plan !== "premium") return false;

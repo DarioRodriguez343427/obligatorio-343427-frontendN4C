@@ -1,4 +1,4 @@
-import api, { validarRespuesta } from "./adminApi";
+import api, { validarRespuesta } from "./adminApi.js";
 
 const validarClase = (clase) => {
   if (!clase || !clase.id) return false;
@@ -7,6 +7,11 @@ const validarClase = (clase) => {
   if (!clase.disciplina?.id || typeof clase.disciplina.nombre !== "string") return false;
   return true;
 };
+
+const resumirClase = (clase) => ({
+  id: clase.id, nombre: clase.nombre, descripcion: clase.descripcion,
+  disciplina: { id: clase.disciplina.id, nombre: clase.disciplina.nombre },
+});
 
 const validarListadoClases = (datos) => {
   if (!datos || !Array.isArray(datos.clases)) return false;
@@ -23,14 +28,14 @@ const validarListadoClases = (datos) => {
 
 export const crearClaseApi = async (datos) => {
   const respuesta = await api.post("/clases", datos);
-  return validarRespuesta(respuesta, 201, validarClase);
+  return resumirClase(validarRespuesta(respuesta, 201, validarClase));
 };
 
 export const actualizarClaseApi = async (id, datos) => {
   const respuesta = await api.patch(`/clases/${id}`, datos);
   const clase = validarRespuesta(respuesta, 200, validarClase);
   if (clase.id !== id) throw new Error("El servidor devolvió otra clase.");
-  return clase;
+  return resumirClase(clase);
 };
 
 export const eliminarClaseApi = async (id) => {
@@ -48,17 +53,7 @@ export const obtenerClasesApi = async (signal, pagina = 1, limite = 10) => {
   const datos = validarRespuesta(respuesta, 200, validarListadoClases);
 
   // Guardamos solamente los campos que necesita el listado.
-  const clases = datos.clases.map((clase) => {
-    return {
-      id: clase.id,
-      nombre: clase.nombre,
-      descripcion: clase.descripcion,
-      disciplina: {
-        id: clase.disciplina.id,
-        nombre: clase.disciplina.nombre,
-      },
-    };
-  });
+  const clases = datos.clases.map(resumirClase);
 
   return {
     clases,

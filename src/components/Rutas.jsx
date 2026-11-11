@@ -1,7 +1,7 @@
 import { BrowserRouter, Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom'
 import Login from './Login';
 import Dashboard from './Dashboard';
-import Registro from './Registro';
+import Registro from './registro';
 
 const ContenidoRutas = () => {
 

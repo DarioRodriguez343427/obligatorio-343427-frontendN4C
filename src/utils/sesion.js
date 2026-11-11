@@ -8,7 +8,8 @@ export const programarVencimiento = (token, alVencer) => {
     try {
         const { exp } = jwtDecode(token);
         if (!exp) {
-            console.warn("El token no tiene fecha de vencimiento (exp).");
+            localStorage.removeItem("token");
+            alVencer();
             return;
         }
         const milisegundosRestantes = exp * 1000 - Date.now();
@@ -21,7 +22,7 @@ export const programarVencimiento = (token, alVencer) => {
             localStorage.removeItem("token");
             alVencer();
         }, milisegundosRestantes);
-    } catch (error) {
+    } catch {
         localStorage.removeItem("token");
         alVencer();
     }

@@ -1,4 +1,4 @@
-import api, { validarRespuesta } from "./adminApi";
+import api, { validarRespuesta } from "./adminApi.js";
 
 const validarClima = (datos) => {
   if (!datos || typeof datos.capital !== "string" || typeof datos.fecha !== "string") return false;
@@ -16,7 +16,13 @@ const validarClima = (datos) => {
   return true;
 };
 
-export const obtenerClimaApi = async (departamento, fecha) => {
-  const respuesta = await api.get("/clima", { params: { departamento, fecha } });
-  return validarRespuesta(respuesta, 200, validarClima);
+export const obtenerClimaApi = async (departamento, fecha, signal) => {
+  const respuesta = await api.get("/clima", { params: { departamento, fecha }, signal });
+  const datos = validarRespuesta(respuesta, 200, validarClima);
+  return {
+    capital: datos.capital, fecha: datos.fecha,
+    temperaturaMaxima: datos.temperaturaMaxima, temperaturaMinima: datos.temperaturaMinima,
+    probabilidadPrecipitacion: datos.probabilidadPrecipitacion, vientoMaximo: datos.vientoMaximo,
+    unidades: datos.unidades,
+  };
 };

@@ -1,5 +1,6 @@
+import { actualizarPlanSlice, limpiarClienteSlice } from "../redux/features/clienteSlice";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Card } from "react-bootstrap";
 import { toast } from "react-toastify";
@@ -8,7 +9,8 @@ import { aumentarContadorPeticiones, disminuirContadorPeticiones } from "../redu
 import { programarVencimiento } from "../utils/sesion";
 import { mensajeErrorApi } from "../utils/erroresApi";
 
-const CambiarPlan = ({ plan, onActualizado }) => {
+const CambiarPlan = () => {
+  const plan = useSelector((state) => state.clienteSlice.plan);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [cambiando, setCambiando] = useState(false);
@@ -23,10 +25,11 @@ const CambiarPlan = ({ plan, onActualizado }) => {
       programarVencimiento(resultado.token, () => {
         localStorage.removeItem("token");
         localStorage.removeItem("imageUrl");
+        dispatch(limpiarClienteSlice());
         toast.info("Tu sesión venció. Iniciá sesión nuevamente.");
         navigate("/login", { replace: true });
       });
-      onActualizado(resultado.plan);
+      dispatch(actualizarPlanSlice(resultado.plan));
       toast.success("Tu plan ahora es Premium");
     } catch (error) {
       toast.error(mensajeErrorApi(error));

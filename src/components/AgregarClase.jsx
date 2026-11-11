@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useFormik } from "formik";
 import { Alert, Card, Form } from "react-bootstrap";
+import { crearClaseApi, actualizarClaseApi } from "../services/clasesServices";
+import { agregarClaseSlice, actualizarClaseSlice, seleccionarClaseSlice } from "../redux/features/clasesSlice";
 import { obtenerDisciplinasApi } from "../services/disciplinasServices";
 import { cargarDisciplinasSlice } from "../redux/features/disciplinaSlice";
 import { aumentarContadorPeticiones, disminuirContadorPeticiones } from "../redux/features/loadingSlice";
@@ -10,7 +12,12 @@ import { mensajeErrorApi } from "../utils/erroresApi";
 import { generarDescripcionApi } from "../services/clienteServices";
 import { toast } from "react-toastify";
 
-const AgregarClase = ({ clase, bloqueado, limiteAlcanzado, onGuardar, onCancelar }) => {
+const AgregarClase = () => {
+  const clase = useSelector((state) => state.clasesSlice.claseEditando);
+  const { total, cargada, pagina, paginaSolicitada, limite, limiteSolicitado } = useSelector((state) => state.clasesSlice);
+  const plan = useSelector((state) => state.clienteSlice.plan);
+  const bloqueado = useSelector((state) => state.loadingSlice.contadorPeticiones > 0);
+  const limiteAlcanzado = plan === "plus" && total >= 4;
   const dispatch = useDispatch();
   const disciplinas = useSelector((state) => state.disciplinasSlice);
   const [cargando, setCargando] = useState(true);
@@ -51,7 +58,7 @@ const AgregarClase = ({ clase, bloqueado, limiteAlcanzado, onGuardar, onCancelar
     initialValues: {
       nombre: clase?.nombre || "",
       descripcion: clase?.descripcion || "",
-      disciplina: clase?.disciplina.id || "",
+      disciplina: clase?.disciplina?.id || "",
       detalles: "",
     },
     enableReinitialize: true,
@@ -59,14 +66,27 @@ const AgregarClase = ({ clase, bloqueado, limiteAlcanzado, onGuardar, onCancelar
     validateOnMount: true,
     onSubmit: async (valores, { resetForm }) => {
       if (bloqueado || generando || cargando || errorCarga || (!clase && limiteAlcanzado)) return;
-      const guardado = await onGuardar({
-        nombre: valores.nombre.trim(),
-        descripcion: valores.descripcion.trim(),
-        disciplina: valores.disciplina,
-      });
-      if (guardado) {
+      if (!cargada || pagina !== paginaSolicitada || limite !== limiteSolicitado) return;
+      const datos = {
+        nombre: valores.nombre.trim(), descripcion: valores.descripcion.trim(), disciplina: valores.disciplina,
+      };
+      dispatch(aumentarContadorPeticiones());
+      try {
+        if (clase) {
+          const actualizada = await actualizarClaseApi(clase.id, datos);
+          dispatch(actualizarClaseSlice(actualizada));
+          toast.success("Clase actualizada");
+        } else {
+          const nueva = await crearClaseApi(datos);
+          dispatch(agregarClaseSlice(nueva));
+          toast.success("Clase agregada");
+        }
         resetForm();
         setErrorIA("");
+      } catch (error) {
+        toast.error(mensajeErrorApi(error));
+      } finally {
+        dispatch(disminuirContadorPeticiones());
       }
     },
   });
@@ -77,7 +97,7 @@ const AgregarClase = ({ clase, bloqueado, limiteAlcanzado, onGuardar, onCancelar
   const handlerCancelar = () => {
     formik.resetForm();
     setErrorIA("");
-    onCancelar();
+    dispatch(seleccionarClaseSlice(null));
   };
   const handlerGenerarDescripcion = async () => {
     if (generando || formik.isSubmitting || deshabilitado) return;

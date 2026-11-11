@@ -2,7 +2,7 @@ import { useDispatch } from "react-redux";
 import { aumentarContadorPeticiones, disminuirContadorPeticiones } from "../redux/features/loadingSlice";
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Card, Form } from 'react-bootstrap';
+import { Card, Form } from 'react-bootstrap';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { jwtDecode } from 'jwt-decode';
@@ -38,6 +38,7 @@ const Registro = () => {
   const formik = useFormik({
     initialValues: { name: '', username: '', email: '', password: '', confirmPassword: '', image: '' },
     validationSchema: esquema,
+    validateOnMount: true,
     onSubmit: async (valores, { resetForm }) => {
       if (errorFoto || leyendoFoto) return;
       try {
@@ -84,11 +85,16 @@ const Registro = () => {
     reader.readAsDataURL(foto);
   };
 
+  const handlerEvitarEnvio = (evento) => evento.preventDefault();
+  const handlerRegistrarse = () => {
+    if (!formik.isSubmitting && !leyendoFoto && !errorFoto) formik.submitForm();
+  };
+
   return (
     <Card style={{ maxWidth: '28rem', margin: '1rem auto' }}>
       <Card.Body>
         <Card.Title>Registro de usuario</Card.Title>
-        <Form onSubmit={formik.handleSubmit} noValidate>
+        <Form onSubmit={handlerEvitarEnvio} noValidate>
           <fieldset disabled={formik.isSubmitting}>
             {campos.map(([name, label, type, autoComplete]) => (
               <Form.Group className="mb-3" controlId={`registro-${name}`} key={name}>
@@ -106,9 +112,9 @@ const Registro = () => {
               <Form.Text>JPEG, PNG o WebP. Máximo 2 MiB.</Form.Text>
             </Form.Group>
             {formik.values.image && <img src={formik.values.image} alt="Vista previa de la foto de perfil" style={{ maxWidth: '150px', maxHeight: '150px', display: 'block', marginBottom: '1rem' }} />}
-            <Button type="submit" disabled={formik.isSubmitting || leyendoFoto || Boolean(errorFoto)}>
+            <button type="button" className="btn btn-primary" onClick={handlerRegistrarse} disabled={!formik.dirty || !formik.isValid || formik.isSubmitting || leyendoFoto || Boolean(errorFoto)}>
               {formik.isSubmitting ? 'Registrando...' : leyendoFoto ? 'Leyendo foto...' : 'Registrarse'}
-            </Button>
+            </button>
           </fieldset>
         </Form>
         <button type="button" onClick={handlerIrLogin} disabled={formik.isSubmitting}>Volver a iniciar sesión</button>

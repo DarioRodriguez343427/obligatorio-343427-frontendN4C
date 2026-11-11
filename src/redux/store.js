@@ -1,3 +1,4 @@
+import clienteSlice from './features/clienteSlice.js'
 import { configureStore } from '@reduxjs/toolkit'
 import clasesSlice from './features/clasesSlice.js'
 import disciplinasSlice from './features/disciplinaSlice.js'
@@ -10,5 +11,6 @@ export const store = configureStore({
         disciplinasSlice,
         usuariosAdmin,
         loadingSlice,
+        clienteSlice,
     },
 })

@@ -19,6 +19,9 @@ api.interceptors.response.use(
 
 export const loginApi = async (dataLogin) => {
     const resultado = await api.post("/auth/login", dataLogin);
+    if (resultado.status !== 200 || !resultado.data?.token || !resultado.data?.user?.id) {
+        throw new Error("El servidor no devolvió una sesión válida.");
+    }
     return resultado.data;
 }
 

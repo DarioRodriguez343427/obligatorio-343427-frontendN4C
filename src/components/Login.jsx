@@ -1,6 +1,6 @@
+import { mensajeErrorApi } from "../utils/erroresApi";
 import { useDispatch } from "react-redux";
 import { aumentarContadorPeticiones, disminuirContadorPeticiones } from "../redux/features/loadingSlice";
-import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Card from "react-bootstrap/Card";
 import { useNavigate } from "react-router-dom";
@@ -13,12 +13,8 @@ import { loginApi } from "../services/authServices.js";
 import { programarVencimiento } from "../utils/sesion.js";
 
 const esquemaLogin = Yup.object({
-  identificador: Yup.string()
-    .required("El usuario es obligatorio")
-    .min(3, "El usuario debe tener al menos 3 caracteres"),
-  password: Yup.string()
-    .required("La contraseña es obligatoria")
-    .min(6, "La contraseña debe tener al menos 6 caracteres"),
+  identificador: Yup.string().trim().required("El usuario o email es obligatorio"),
+  password: Yup.string().required("La contraseña es obligatoria"),
 });
 
 const Login = () => {
@@ -44,7 +40,9 @@ const Login = () => {
         const token = resultado.token;
 
         const decodificado = jwtDecode(token);
-        console.log("decodificado", decodificado);
+        if (!decodificado.exp || decodificado.exp * 1000 <= Date.now()) {
+          throw new Error("La sesión recibida no es válida. Volvé a iniciar sesión.");
+        }
 
         localStorage.setItem("token", token);
         localStorage.setItem("imageUrl", resultado.user?.imageUrl || "");
@@ -60,17 +58,22 @@ const Login = () => {
         navigate("/dashboard");
       } catch (error) {
         console.error("Error en login:", error);
-        toast.error("No se pudo iniciar sesión. Revisá tus datos.");
+        toast.error(mensajeErrorApi(error));
       } finally {
         dispatch(disminuirContadorPeticiones());
       }
     },
   });
 
+  const handlerEvitarEnvio = (evento) => evento.preventDefault();
+  const handlerIniciarSesion = () => {
+    if (!formik.isSubmitting) formik.submitForm();
+  };
+
   return (
     <Card style={{ width: "18rem", justifyContent: "center" }}>
       <Card.Body>
-        <Form onSubmit={formik.handleSubmit} noValidate>
+        <Form onSubmit={handlerEvitarEnvio} noValidate>
           <Form.Group className="mb-3" controlId="identificador">
             <Form.Label>Usuario</Form.Label>
             <Form.Control
@@ -108,9 +111,10 @@ const Login = () => {
             </Form.Control.Feedback>
           </Form.Group>
 
-          <Button
-            variant="primary"
-            type="submit"
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={handlerIniciarSesion}
             disabled={
               formik.isSubmitting ||
               formik.values.identificador.trim() === "" ||
@@ -118,7 +122,7 @@ const Login = () => {
             }
           >
             {formik.isSubmitting ? "Ingresando..." : "Iniciar sesión"}
-          </Button>
+          </button>
         </Form>
         <button type="button" onClick={handlerIrRegistro} disabled={formik.isSubmitting}>
           Registrarse

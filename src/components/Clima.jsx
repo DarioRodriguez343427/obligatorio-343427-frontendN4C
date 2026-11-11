@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { cargarClimaSlice } from "../redux/features/clienteSlice";
+import { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Alert, Card, Col, Form, Row } from "react-bootstrap";
 import { obtenerClimaApi } from "../services/climaServices";
 import { aumentarContadorPeticiones, disminuirContadorPeticiones } from "../redux/features/loadingSlice";
@@ -32,33 +33,37 @@ const mostrarMedida = (valor, unidad) => {
 
 const Clima = () => {
   const dispatch = useDispatch();
+  const solicitud = useRef(null);
+  useEffect(() => () => solicitud.current?.abort(), []);
   const { hoy, ultimoDia } = obtenerLimitesFecha();
   const [departamento, setDepartamento] = useState("");
   const [fecha, setFecha] = useState(hoy);
-  const [clima, setClima] = useState(null);
+  const clima = useSelector((state) => state.clienteSlice.clima);
   const [consultando, setConsultando] = useState(false);
   const [error, setError] = useState("");
 
   const handlerConsultarClima = async () => {
     if (consultando) return;
     setError("");
-    setClima(null);
+    dispatch(cargarClimaSlice(null));
     const limites = obtenerLimitesFecha();
     if (!departamento || !fecha || fecha < limites.hoy || fecha > limites.ultimoDia) {
       setError("Seleccioná un departamento y una fecha entre hoy y los próximos 15 días.");
       return;
     }
 
+    const controller = new AbortController();
+    solicitud.current = controller;
     setConsultando(true);
     dispatch(aumentarContadorPeticiones());
     try {
-      const resultado = await obtenerClimaApi(departamento, fecha);
-      setClima(resultado);
+      const resultado = await obtenerClimaApi(departamento, fecha, controller.signal);
+      if (!controller.signal.aborted) dispatch(cargarClimaSlice(resultado));
     } catch (error) {
-      setError(mensajeErrorApi(error));
+      if (!controller.signal.aborted) setError(mensajeErrorApi(error));
     } finally {
       dispatch(disminuirContadorPeticiones());
-      setConsultando(false);
+      if (!controller.signal.aborted) setConsultando(false);
     }
   };
 
@@ -72,7 +77,7 @@ const Clima = () => {
             <Col md={5}>
               <Form.Group controlId="climaDepartamento">
                 <Form.Label>Departamento</Form.Label>
-                <Form.Select value={departamento} onChange={(event) => { setDepartamento(event.target.value); setClima(null); setError(""); }} disabled={consultando}>
+                <Form.Select value={departamento} onChange={(event) => { setDepartamento(event.target.value); dispatch(cargarClimaSlice(null)); setError(""); }} disabled={consultando}>
                   <option value="">Seleccioná un departamento</option>
                   {departamentos.map(([valor, nombre]) => <option key={valor} value={valor}>{nombre}</option>)}
                 </Form.Select>
@@ -81,7 +86,7 @@ const Clima = () => {
             <Col md={4}>
               <Form.Group controlId="climaFecha">
                 <Form.Label>Fecha</Form.Label>
-                <Form.Control type="date" value={fecha} min={hoy} max={ultimoDia} onChange={(event) => { setFecha(event.target.value); setClima(null); setError(""); }} disabled={consultando} />
+                <Form.Control type="date" value={fecha} min={hoy} max={ultimoDia} onChange={(event) => { setFecha(event.target.value); dispatch(cargarClimaSlice(null)); setError(""); }} disabled={consultando} />
               </Form.Group>
             </Col>
             <Col md={3}>
