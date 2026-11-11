@@ -1,3 +1,4 @@
+import { aumentarContadorPeticiones, disminuirContadorPeticiones } from "../redux/features/loadingSlice";
 import React, { useEffect } from 'react'
 import Clases from './Clases'
 import { useDispatch } from 'react-redux';
@@ -17,6 +18,7 @@ const Contenido = () => {
 
         const obtenerClases = async () => {
             try{
+              dispatch(aumentarContadorPeticiones());
               //me traigo la lista desde el services donde axios le pega al endpoint
               const listaClases = await obtenerClasesApi(controller.signal);
               //le paso a redux la lista para que la cargue en su store
@@ -25,6 +27,8 @@ const Contenido = () => {
             }catch(error){
               console.log(error);
               return;
+            } finally {
+              dispatch(disminuirContadorPeticiones());
             }
         };
         //llamamos al servicio
@@ -33,7 +37,7 @@ const Contenido = () => {
         return () => {
           controller.abort();
         }
-    })
+    }, [dispatch])
   return (
     <>
     <Container>

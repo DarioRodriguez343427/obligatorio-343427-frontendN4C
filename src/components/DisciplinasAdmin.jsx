@@ -1,3 +1,4 @@
+import { aumentarContadorPeticiones, disminuirContadorPeticiones } from "../redux/features/loadingSlice";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useFormik } from "formik";
@@ -36,6 +37,7 @@ const FilaDisciplina = ({ id }) => {
     validateOnMount: true,
     onSubmit: async (valores) => {
       try {
+        dispatch(aumentarContadorPeticiones());
         const actualizada = await actualizarDisciplinaApi(id, {
           nombre: valores.nombre.trim(),
           descripcion: valores.descripcion.trim(),
@@ -45,6 +47,8 @@ const FilaDisciplina = ({ id }) => {
         toast.success("Disciplina actualizada");
       } catch (error) {
         toast.error(mensajeErrorApi(error));
+      } finally {
+        dispatch(disminuirContadorPeticiones());
       }
     },
   });
@@ -65,12 +69,14 @@ const FilaDisciplina = ({ id }) => {
   const handlerEliminar = async () => {
     setEliminando(true);
     try {
+      dispatch(aumentarContadorPeticiones());
       await eliminarDisciplinaApi(id);
       dispatch(eliminarDisciplinaSlice(id));
       toast.success("Disciplina eliminada");
     } catch (error) {
       toast.error(mensajeErrorApi(error));
     } finally {
+      dispatch(disminuirContadorPeticiones());
       setEliminando(false);
       setConfirmando(false);
     }
@@ -174,6 +180,7 @@ const DisciplinasAdmin = () => {
     const controller = new AbortController();
     const cargar = async () => {
       try {
+        dispatch(aumentarContadorPeticiones());
         const datos = await obtenerDisciplinasApi(controller.signal);
         if (!controller.signal.aborted) dispatch(cargarDisciplinasSlice(datos));
       } catch (error) {
@@ -182,6 +189,7 @@ const DisciplinasAdmin = () => {
           toast.error(mensajeErrorApi(error));
         }
       } finally {
+        dispatch(disminuirContadorPeticiones());
         if (!controller.signal.aborted) setCargando(false);
       }
     };
@@ -194,6 +202,7 @@ const DisciplinasAdmin = () => {
     validateOnMount: true,
     onSubmit: async (valores, { resetForm }) => {
       try {
+        dispatch(aumentarContadorPeticiones());
         const nueva = await crearDisciplinaApi({
           nombre: valores.nombre.trim(),
           descripcion: valores.descripcion.trim(),
@@ -203,6 +212,8 @@ const DisciplinasAdmin = () => {
         toast.success("Disciplina agregada");
       } catch (error) {
         toast.error(mensajeErrorApi(error));
+      } finally {
+        dispatch(disminuirContadorPeticiones());
       }
     },
   });

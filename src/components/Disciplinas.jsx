@@ -1,3 +1,4 @@
+import { aumentarContadorPeticiones, disminuirContadorPeticiones } from "../redux/features/loadingSlice";
 import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { obtenerDisciplinasApi } from '../services/disciplinasServices';
@@ -12,20 +13,23 @@ const Disciplinas = () => {
 
         const obtenerTareas = async() => {
             try {
+              dispatch(aumentarContadorPeticiones());
                 const listaDisciplinas = await obtenerDisciplinasApi(controller.signal);
                 dispatch(cargarDisciplinasSlice(listaDisciplinas));
             } catch (error) {
                 console.log("peticion cancelada", error);
+            } finally {
+              dispatch(disminuirContadorPeticiones());
             }
         }
 
-        obtenerDisciplinasApi();
+        obtenerTareas();
 
         return () => {
             controller.abort();
         }
 
-    }, []);
+    }, [dispatch]);
 
 
 

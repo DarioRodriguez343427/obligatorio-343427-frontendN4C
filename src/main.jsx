@@ -3,10 +3,12 @@ import { ToastContainer } from 'react-toastify'
 import { Provider } from 'react-redux'
 import { store } from './redux/store.js'
 import Rutas from './components/Rutas.jsx'
+import SpinnerGlobal from './components/SpinnerGlobal.jsx'
 import 'bootstrap/dist/css/bootstrap.min.css'
 
 createRoot(document.getElementById('root')).render(
   <Provider store={store}>
+    <SpinnerGlobal />
     <ToastContainer />
     <Rutas />
   </Provider>,

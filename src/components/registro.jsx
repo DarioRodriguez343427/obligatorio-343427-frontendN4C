@@ -1,3 +1,5 @@
+import { useDispatch } from "react-redux";
+import { aumentarContadorPeticiones, disminuirContadorPeticiones } from "../redux/features/loadingSlice";
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Card, Form } from 'react-bootstrap';
@@ -27,6 +29,7 @@ const campos = [
 
 const Registro = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const handlerIrLogin = () => {
     navigate('/login');
   };
@@ -38,6 +41,7 @@ const Registro = () => {
     onSubmit: async (valores, { resetForm }) => {
       if (errorFoto || leyendoFoto) return;
       try {
+        dispatch(aumentarContadorPeticiones());
         const datos = { ...valores, name: valores.name.trim(), username: valores.username.trim(), email: valores.email.trim().toLowerCase() };
         if (!datos.image) delete datos.image;
         const { user, token } = await registerApi(datos);
@@ -58,6 +62,8 @@ const Registro = () => {
         const respuesta = error.response?.data;
         const detalles = respuesta?.errors?.map((detalle) => detalle.message).filter(Boolean).join('. ');
         toast.error(detalles || respuesta?.message || respuesta?.error || error.message || 'No se pudo completar el registro.');
+      } finally {
+        dispatch(disminuirContadorPeticiones());
       }
     },
   });
