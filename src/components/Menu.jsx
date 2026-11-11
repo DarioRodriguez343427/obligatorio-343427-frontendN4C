@@ -10,6 +10,7 @@ const Menu = () => {
   const handleCerrarSesion = () => {
     cancelarVencimiento();
     window.localStorage.removeItem("token");
+    window.localStorage.removeItem("imageUrl");
     navigate("/login", {replace: true});  
   }
 

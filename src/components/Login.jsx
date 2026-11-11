@@ -22,6 +22,10 @@ const esquemaLogin = Yup.object({
 const Login = () => {
   const navigate = useNavigate();
 
+  const handlerIrRegistro = () => {
+    navigate("/registro");
+  };
+
   const formik = useFormik({
     initialValues: {
       identificador: "usuario625503",
@@ -39,9 +43,11 @@ const Login = () => {
         console.log("decodificado", decodificado);
 
         localStorage.setItem("token", token);
+        localStorage.setItem("imageUrl", resultado.user?.imageUrl || "");
 
         programarVencimiento(token, () => {
           localStorage.removeItem("token");
+          localStorage.removeItem("imageUrl");
           toast.info("Tu sesión venció. Iniciá sesión nuevamente.");
           navigate("/login", { replace: true });
         });
@@ -108,6 +114,9 @@ const Login = () => {
             {formik.isSubmitting ? "Ingresando..." : "Iniciar sesión"}
           </Button>
         </Form>
+        <button type="button" onClick={handlerIrRegistro} disabled={formik.isSubmitting}>
+          Registrarse
+        </button>
       </Card.Body>
     </Card>
   );

@@ -1,6 +1,6 @@
 import { BrowserRouter, Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom'
 import Login from './Login';
-import App from '../App';
+import Dashboard from './Dashboard';
 import Registro from './Registro';
 
 const ContenidoRutas = () => {
@@ -13,7 +13,7 @@ const ContenidoRutas = () => {
                 <Route path="/login" element={<Login />} />
                 <Route path="/registro" element={<Registro />} />
             </Route>
-            <Route path="/dashboard" element={ existeToken ? <App /> : <Navigate to="/login" replace /> } />
+            <Route path="/dashboard" element={ existeToken ? <Dashboard /> : <Navigate to="/login" replace /> } />
             <Route path="*" element={<Navigate to="/login" replace></Navigate>}></Route>
         </Routes>
     );

@@ -26,18 +26,15 @@ const Clases = () => {
     const textoAFiltrar = e.target.value;
     console.log("textoAFiltrar", textoAFiltrar);
 
-    if (textoAFiltrar.trim() == "") {
-      setListaClasesFiltradas([]);
+    if (textoAFiltrar.trim() === "") {
+      setListaClasesFiltradas(clases);
     } else {
       const auxListaFiltrada = clases?.filter((c) => c.nombre.includes(textoAFiltrar));
-      
-      console.log("auxListaFiltrada", auxListaFiltrada);
-      
+            
       setListaClasesFiltradas(auxListaFiltrada);
     }
   };
-      console.log("listado desde useSelector", clases);
-
+  
     const handlerAgregarClase = () => {
         console.log("agregando clase")
     }
