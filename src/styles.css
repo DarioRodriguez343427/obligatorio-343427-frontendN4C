@@ -123,3 +123,12 @@ textarea.form-control { resize: vertical; }
 .auth-card .password-toggle { position: absolute; top: 1px; right: 1px; width: 42px; height: 40px; display: grid; place-items: center; color: #adb5c2; background: transparent; border: 0; border-radius: 6px; }
 .auth-card .password-toggle:hover { color: #eef0f3; }
 .auth-card .password-toggle:focus-visible { outline-offset: -4px; }
+
+/* Shared icon sizing; buttons retain their own colors and accessible text. */
+.app-icon { font-size: 20px; line-height: 1; width: 1em; height: 1em; overflow: hidden; display: inline-block; vertical-align: middle; flex-shrink: 0; font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20; }
+.form-label .app-icon { font-size: 17px; margin-right: 4px; color: #adb5c2; }
+.card-title .app-icon, .section-divider .app-icon { margin-right: 6px; color: #adb5c2; }
+.btn .app-icon { font-size: 18px; margin-right: 5px; }
+.btn-sm .app-icon { font-size: 16px; }
+.panel-clima dt .app-icon { font-size: 18px; margin-right: 5px; }
+.password-toggle .app-icon { margin: 0; }

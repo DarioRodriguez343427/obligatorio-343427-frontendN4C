@@ -1,3 +1,4 @@
+import Icono from "./Icono";
 import { actualizarPlanSlice, limpiarClienteSlice } from "../redux/features/clienteSlice";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -42,11 +43,11 @@ const CambiarPlan = () => {
   return (
     <Card className="panel-plan">
       <Card.Body>
-        <Card.Title as="h2">Mi plan: {plan === "premium" ? "Premium" : "Plus"}</Card.Title>
+        <Card.Title as="h2"><Icono nombre="workspace_premium" /> Mi plan: {plan === "premium" ? "Premium" : "Plus"}</Card.Title>
         {plan === "plus" && (
           <>
             <p>Pasá a Premium para crear más de 4 clases.</p>
-            <button type="button" className="btn btn-primary" onClick={handlerCambiarPlan} disabled={cambiando}>
+            <button type="button" className="btn btn-primary" onClick={handlerCambiarPlan} disabled={cambiando}><Icono nombre="workspace_premium" />
               {cambiando ? "Cambiando..." : "Cambiar a Premium"}
             </button>
           </>

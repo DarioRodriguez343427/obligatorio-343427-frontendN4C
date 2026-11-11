@@ -1,3 +1,5 @@
+import { useState } from "react";
+import Icono from "./Icono";
 import { mensajeErrorApi } from "../utils/erroresApi";
 import { useDispatch } from "react-redux";
 import { aumentarContadorPeticiones, disminuirContadorPeticiones } from "../redux/features/loadingSlice";
@@ -18,6 +20,8 @@ const esquemaLogin = Yup.object({
 });
 
 const Login = () => {
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const handlerAlternarPassword = () => setPasswordVisible((visible) => !visible);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -79,7 +83,7 @@ const Login = () => {
         <p className="auth-intro">Ingresá a tu espacio de entrenamiento.</p>
         <Form onSubmit={handlerEvitarEnvio} noValidate>
           <Form.Group className="mb-3" controlId="identificador">
-            <Form.Label>Usuario</Form.Label>
+            <Form.Label><Icono nombre="person" /> Usuario</Form.Label>
             <Form.Control
               type="text"
               name="identificador"
@@ -98,9 +102,10 @@ const Login = () => {
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="password">
-            <Form.Label>Contraseña</Form.Label>
+            <Form.Label><Icono nombre="lock" /> Contraseña</Form.Label>
+            <div className="password-field">
             <Form.Control
-              type="password"
+              type={passwordVisible ? "text" : "password"}
               name="password"
               value={formik.values.password}
               placeholder="Ingresá tu contraseña"
@@ -110,9 +115,15 @@ const Login = () => {
                 formik.touched.password && Boolean(formik.errors.password)
               }
             />
+            <button type="button" className="password-toggle" onClick={handlerAlternarPassword}
+              disabled={formik.isSubmitting} aria-label={passwordVisible ? "Ocultar contraseña" : "Mostrar contraseña"}
+              aria-pressed={passwordVisible} aria-controls="password">
+              <Icono nombre={passwordVisible ? "visibility_off" : "visibility"} />
+            </button>
             <Form.Control.Feedback type="invalid">
               {formik.errors.password}
             </Form.Control.Feedback>
+            </div>
           </Form.Group>
 
           <button
@@ -124,11 +135,11 @@ const Login = () => {
               formik.values.identificador.trim() === "" ||
               formik.values.password === ""
             }
-          >
+          ><Icono nombre="login" />
             {formik.isSubmitting ? "Ingresando..." : "Iniciar sesión"}
           </button>
         </Form>
-        <button type="button" className="btn btn-outline-secondary auth-secondary" onClick={handlerIrRegistro} disabled={formik.isSubmitting}>
+        <button type="button" className="btn btn-outline-secondary auth-secondary" onClick={handlerIrRegistro} disabled={formik.isSubmitting}><Icono nombre="person_add" />
           Registrarse
         </button>
       </Card.Body>

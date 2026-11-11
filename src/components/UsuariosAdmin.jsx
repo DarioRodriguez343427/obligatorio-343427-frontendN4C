@@ -1,3 +1,4 @@
+import Icono from "./Icono";
 import { aumentarContadorPeticiones, disminuirContadorPeticiones } from "../redux/features/loadingSlice";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -122,7 +123,7 @@ const DetalleUsuarioAdmin = () => {
             ["email", "Email"],
           ].map(([name, label]) => (
             <Form.Group className="mb-3" key={name}>
-              <Form.Label htmlFor={`admin-usuario-${name}`}>{label}</Form.Label>{" "}
+              <Form.Label htmlFor={`admin-usuario-${name}`}><Icono nombre={name === "email" ? "mail" : name === "password" ? "lock" : name === "confirmPassword" ? "lock_reset" : "person"} /> {label}</Form.Label>{" "}
               <Form.Control
                 isInvalid={Boolean(formik.touched[name] && formik.errors[name])}
                 id={`admin-usuario-${name}`}
@@ -138,7 +139,7 @@ const DetalleUsuarioAdmin = () => {
             </Form.Group>
           ))}
           <Form.Group className="mb-3" controlId="admin-usuario-estado">
-            <Form.Label>Estado</Form.Label>{" "}
+            <Form.Label><Icono nombre="verified_user" /> Estado</Form.Label>{" "}
             <Form.Select
               isInvalid={Boolean(formik.touched.estado && formik.errors.estado)}
               id="admin-usuario-estado"
@@ -163,8 +164,7 @@ const DetalleUsuarioAdmin = () => {
                 ["confirmPassword", "Confirmar contraseña"],
               ].map(([name, label]) => (
                 <Form.Group className="mb-3" key={name}>
-                  <Form.Label htmlFor={`admin-usuario-${name}`}>
-                    {label}
+                  <Form.Label htmlFor={`admin-usuario-${name}`}><Icono nombre={name === "email" ? "mail" : name === "password" ? "lock" : name === "confirmPassword" ? "lock_reset" : "person"} /> {label}
                   </Form.Label>{" "}
                   <Form.Control
                     isInvalid={Boolean(
@@ -187,11 +187,11 @@ const DetalleUsuarioAdmin = () => {
           )}
         </fieldset>
         <Form.Group className="mb-3" controlId="admin-usuario-rol">
-          <Form.Label>Rol</Form.Label>{" "}
+          <Form.Label><Icono nombre="badge" /> Rol</Form.Label>{" "}
           <Form.Control value={usuario.role || ""} disabled />
         </Form.Group>
         <Form.Group className="mb-3" controlId="admin-usuario-plan">
-          <Form.Label>Plan</Form.Label>{" "}
+          <Form.Label><Icono nombre="workspace_premium" /> Plan</Form.Label>{" "}
           <Form.Control value={usuario.plan || ""} disabled />
         </Form.Group>
       </Form>
@@ -202,10 +202,10 @@ const DetalleUsuarioAdmin = () => {
             type="button"
             onClick={handlerGuardar}
             disabled={ocupado || !formik.isValid}
-          >
+          ><Icono nombre="save" />
             {formik.isSubmitting ? "Guardando..." : "Guardar"}
           </button>{" "}
-          <button className="btn btn-outline-secondary btn-sm" type="button" onClick={handlerCancelar} disabled={ocupado}>
+          <button className="btn btn-outline-secondary btn-sm" type="button" onClick={handlerCancelar} disabled={ocupado}><Icono nombre="close" />
             Cancelar
           </button>
         </>
@@ -216,14 +216,14 @@ const DetalleUsuarioAdmin = () => {
             type="button"
             onClick={handlerEditar}
             disabled={ocupado || confirmando || usuario.role !== "cliente"}
-          >
+          ><Icono nombre="edit" />
             Editar
           </button>{" "}
           <button className="btn btn-outline-danger btn-sm"
             type="button"
             onClick={handlerConfirmar}
             disabled={ocupado || confirmando || usuario.id === idActual}
-          >
+          ><Icono nombre="delete" />
             Eliminar
           </button>
         </>
@@ -239,14 +239,14 @@ const DetalleUsuarioAdmin = () => {
           <p>
             ¿Eliminar a {usuario.name}? También se eliminará su foto de perfil.
           </p>
-          <button className="btn btn-outline-danger btn-sm" type="button" onClick={handlerEliminar} disabled={ocupado}>
+          <button className="btn btn-outline-danger btn-sm" type="button" onClick={handlerEliminar} disabled={ocupado}><Icono nombre="delete" />
             {eliminando ? "Eliminando..." : "Confirmar eliminación"}
           </button>{" "}
           <button className="btn btn-outline-secondary btn-sm"
             type="button"
             onClick={handlerCancelarEliminar}
             disabled={ocupado}
-          >
+          ><Icono nombre="close" />
             Cancelar
           </button>
         </div>
@@ -319,9 +319,9 @@ const UsuariosAdmin = () => {
   return (
     <Card className="panel-usuarios">
       <Card.Body>
-        <Card.Title as="h2">Usuarios</Card.Title>
+        <Card.Title as="h2"><Icono nombre="group" /> Usuarios</Card.Title>
         <Form.Group className="mb-3" controlId="admin-selector-usuario">
-          <Form.Label>Seleccionar usuario</Form.Label>{" "}
+          <Form.Label><Icono nombre="person_search" /> Seleccionar usuario</Form.Label>{" "}
           <Form.Select
             id="admin-selector-usuario"
             value={seleccionExiste ? idSeleccionado : ""}

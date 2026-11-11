@@ -1,3 +1,4 @@
+import Icono from "./Icono";
 import { aumentarContadorPeticiones, disminuirContadorPeticiones } from "../redux/features/loadingSlice";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -87,7 +88,7 @@ const FilaDisciplina = ({ id, editando, onEditar, onCancelar }) => {
         <Form onSubmit={formik.handleSubmit} noValidate>
           <fieldset disabled={formik.isSubmitting}>
             <Form.Group className="mb-3" controlId={`nombre-${id}`}>
-              <Form.Label>Nombre</Form.Label>
+              <Form.Label><Icono nombre="label" /> Nombre</Form.Label>
               <Form.Control
                 isInvalid={Boolean(
                   formik.touched.nombre && formik.errors.nombre,
@@ -103,7 +104,7 @@ const FilaDisciplina = ({ id, editando, onEditar, onCancelar }) => {
               </Form.Control.Feedback>
             </Form.Group>
             <Form.Group className="mb-3" controlId={`descripcion-${id}`}>
-              <Form.Label>Descripción</Form.Label>
+              <Form.Label><Icono nombre="description" /> Descripción</Form.Label>
               <Form.Control
                 isInvalid={Boolean(
                   formik.touched.descripcion && formik.errors.descripcion,
@@ -122,10 +123,10 @@ const FilaDisciplina = ({ id, editando, onEditar, onCancelar }) => {
               type="button"
               onClick={handlerGuardar}
               disabled={!formik.isValid || formik.isSubmitting}
-            >
+            ><Icono nombre="save" />
               Guardar
             </button>
-            <button className="btn btn-outline-secondary btn-sm" type="button" onClick={handlerCancelar}>
+            <button className="btn btn-outline-secondary btn-sm" type="button" onClick={handlerCancelar}><Icono nombre="close" />
               Cancelar
             </button>
           </fieldset>
@@ -139,14 +140,14 @@ const FilaDisciplina = ({ id, editando, onEditar, onCancelar }) => {
             type="button"
             onClick={handlerEditar}
             disabled={eliminando || confirmando}
-          >
+          ><Icono nombre="edit" />
             Editar
           </button>{" "}
           <button className="btn btn-outline-danger btn-sm"
             type="button"
             onClick={handlerConfirmar}
             disabled={eliminando || confirmando}
-          >
+          ><Icono nombre="delete" />
             Eliminar
           </button>
         </>
@@ -154,14 +155,14 @@ const FilaDisciplina = ({ id, editando, onEditar, onCancelar }) => {
       {confirmando && (
         <div role="group" aria-label="Confirmar eliminación de disciplina">
           <p>¿Eliminar la disciplina {disciplina.nombre}?</p>
-          <button className="btn btn-outline-danger btn-sm" type="button" onClick={handlerEliminar} disabled={eliminando}>
+          <button className="btn btn-outline-danger btn-sm" type="button" onClick={handlerEliminar} disabled={eliminando}><Icono nombre="delete" />
             {eliminando ? "Eliminando..." : "Confirmar eliminación"}
           </button>
           <button className="btn btn-outline-secondary btn-sm"
             type="button"
             onClick={handlerCancelarEliminar}
             disabled={eliminando}
-          >
+          ><Icono nombre="close" />
             Cancelar
           </button>
         </div>
@@ -225,14 +226,14 @@ const DisciplinasAdmin = () => {
   return (
     <Card className="panel-disciplinas">
       <Card.Body>
-        <Card.Title as="h2">Disciplinas</Card.Title>
-        <h3 className="section-divider">Agregar disciplina</h3>
+        <Card.Title as="h2"><Icono nombre="fitness_center" /> Disciplinas</Card.Title>
+        <h3 className="section-divider"><Icono nombre="add" /> Agregar disciplina</h3>
         <Form onSubmit={formik.handleSubmit} noValidate>
           <fieldset
             disabled={formik.isSubmitting || cargando || Boolean(errorCarga)}
           >
             <Form.Group className="mb-3" controlId="nueva-disciplina-nombre">
-              <Form.Label>Nombre</Form.Label>{" "}
+              <Form.Label><Icono nombre="label" /> Nombre</Form.Label>{" "}
               <Form.Control
                 isInvalid={Boolean(
                   formik.touched.nombre && formik.errors.nombre,
@@ -251,7 +252,7 @@ const DisciplinasAdmin = () => {
               className="mb-3"
               controlId="nueva-disciplina-descripcion"
             >
-              <Form.Label>Descripción</Form.Label>{" "}
+              <Form.Label><Icono nombre="description" /> Descripción</Form.Label>{" "}
               <Form.Control
                 isInvalid={Boolean(
                   formik.touched.descripcion && formik.errors.descripcion,
@@ -270,12 +271,12 @@ const DisciplinasAdmin = () => {
               type="button"
               onClick={handlerAgregar}
               disabled={!formik.isValid || formik.isSubmitting}
-            >
+            ><Icono nombre="add" />
               {formik.isSubmitting ? "Agregando..." : "Agregar disciplina"}
             </button>
           </fieldset>
         </Form>
-        <h3 className="section-divider">Disciplinas disponibles</h3>
+        <h3 className="section-divider"><Icono nombre="fitness_center" /> Disciplinas disponibles</h3>
         {cargando ? (
           <p>Cargando disciplinas...</p>
         ) : errorCarga ? (
