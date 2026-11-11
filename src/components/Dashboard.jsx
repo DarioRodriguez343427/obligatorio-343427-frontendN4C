@@ -1,35 +1,39 @@
-import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
+import Menu from './Menu';
+import DashboardAdmin from './DashboardAdmin';
+import DashboardCliente from './DashboardCliente';
 
 const Dashboard = () => {
   const navigate = useNavigate();
-
-  const [estaLogueado, setEstaLogueado] = useState(false);
-
-  const validarLogin = async () => {
-    const token = window.localStorage.getItem("token");
-    const estaLogueado = token ? true : false;
-    
-    if(!estaLogueado){
-      navigate("/login");
-    }else{
-      setEstaLogueado(estaLogueado);
-    }
-  };
+  const [momentoIngreso] = useState(() => Date.now());
+  const token = localStorage.getItem('token');
+  let role;
+  try {
+    const datos = jwtDecode(token);
+    if (datos.exp * 1000 > momentoIngreso) role = datos.role;
+  } catch {
+    // Un token ausente o mal formado no permite entrar al dashboard.
+  }
+  const accesoValido = role === 'admin' || role === 'cliente';
 
   useEffect(() => {
-    validarLogin();
-  })
+    if (!accesoValido) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('imageUrl');
+      navigate('/login', { replace: true });
+    }
+  }, [accesoValido, navigate]);
+
+  if (!accesoValido) return null;
 
   return (
     <>
-      {estaLogueado ? (
-        <div><App></App></div>
-      ) : (
-        <p>Cargando</p> 
-      )}
+      <Menu />
+      {role === 'admin' ? <DashboardAdmin /> : <DashboardCliente />}
     </>
-  )
-}
+  );
+};
 
-export default Dashboard
+export default Dashboard;
