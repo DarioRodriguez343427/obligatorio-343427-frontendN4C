@@ -1,3 +1,4 @@
+import Icono from "./Icono";
 import { cargarClimaSlice } from "../redux/features/clienteSlice";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -70,13 +71,13 @@ const Clima = () => {
   return (
     <Card className="panel-clima">
       <Card.Body>
-        <Card.Title as="h2">Pronóstico del clima</Card.Title>
+        <Card.Title as="h2"><Icono nombre="partly_cloudy_day" /> Pronóstico del clima</Card.Title>
         <p>Consultá el pronóstico para la capital del departamento, desde hoy hasta los próximos 15 días.</p>
         <Form onSubmit={(event) => event.preventDefault()}>
           <Row className="g-3 align-items-end">
             <Col md={5}>
               <Form.Group controlId="climaDepartamento">
-                <Form.Label>Departamento</Form.Label>
+                <Form.Label><Icono nombre="location_on" /> Departamento</Form.Label>
                 <Form.Select value={departamento} onChange={(event) => { setDepartamento(event.target.value); dispatch(cargarClimaSlice(null)); setError(""); }} disabled={consultando}>
                   <option value="">Seleccioná un departamento</option>
                   {departamentos.map(([valor, nombre]) => <option key={valor} value={valor}>{nombre}</option>)}
@@ -85,12 +86,12 @@ const Clima = () => {
             </Col>
             <Col md={4}>
               <Form.Group controlId="climaFecha">
-                <Form.Label>Fecha</Form.Label>
+                <Form.Label><Icono nombre="calendar_month" /> Fecha</Form.Label>
                 <Form.Control type="date" value={fecha} min={hoy} max={ultimoDia} onChange={(event) => { setFecha(event.target.value); dispatch(cargarClimaSlice(null)); setError(""); }} disabled={consultando} />
               </Form.Group>
             </Col>
             <Col md={3}>
-              <button type="button" className="btn btn-primary" onClick={handlerConsultarClima} disabled={consultando}>
+              <button type="button" className="btn btn-primary" onClick={handlerConsultarClima} disabled={consultando}><Icono nombre="partly_cloudy_day" />
                 {consultando ? "Consultando..." : "Consultar clima"}
               </button>
             </Col>
@@ -102,13 +103,13 @@ const Clima = () => {
             <div className="mt-3">
               <h3 className="h5">{clima.capital} — {clima.fecha.split("-").reverse().join("/")}</h3>
               <dl className="row mb-0">
-                <dt className="col-sm-6">Temperatura máxima</dt>
+                <dt className="col-sm-6"><Icono nombre="thermostat" /> Temperatura máxima</dt>
                 <dd className="col-sm-6">{mostrarMedida(clima.temperaturaMaxima, clima.unidades.temperatura)}</dd>
-                <dt className="col-sm-6">Temperatura mínima</dt>
+                <dt className="col-sm-6"><Icono nombre="thermostat" /> Temperatura mínima</dt>
                 <dd className="col-sm-6">{mostrarMedida(clima.temperaturaMinima, clima.unidades.temperatura)}</dd>
-                <dt className="col-sm-6">Probabilidad de lluvia</dt>
+                <dt className="col-sm-6"><Icono nombre="rainy" /> Probabilidad de lluvia</dt>
                 <dd className="col-sm-6">{mostrarMedida(clima.probabilidadPrecipitacion, clima.unidades.probabilidadPrecipitacion)}</dd>
-                <dt className="col-sm-6">Viento máximo</dt>
+                <dt className="col-sm-6"><Icono nombre="air" /> Viento máximo</dt>
                 <dd className="col-sm-6">{mostrarMedida(clima.vientoMaximo, clima.unidades.viento)}</dd>
               </dl>
               <small className="text-muted">Fuente: Open-Meteo. Hora de Uruguay.</small>

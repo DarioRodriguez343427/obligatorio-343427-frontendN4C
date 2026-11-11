@@ -1,3 +1,4 @@
+import Icono from "./Icono";
 import { useDispatch } from "react-redux";
 import { limpiarClienteSlice } from "../redux/features/clienteSlice";
 import { useState } from 'react'
@@ -7,7 +8,7 @@ import { cancelarVencimiento } from '../utils/sesion';
 import { Container } from 'react-bootstrap';
 
 const Menu = () => {
-  
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [fotoFallida, setFotoFallida] = useState(false);
@@ -22,7 +23,7 @@ const Menu = () => {
     dispatch(limpiarClienteSlice());
     window.localStorage.removeItem("token");
     window.localStorage.removeItem("imageUrl");
-    navigate("/login", {replace: true});  
+    navigate("/login", {replace: true});
   }
 
   return (
@@ -32,7 +33,7 @@ const Menu = () => {
         <div className="header-account">
           {foto && !fotoFallida ? <img className="avatar" src={foto} alt="Foto de perfil" onError={handlerErrorFoto} /> : <span className="avatar avatar-placeholder" aria-hidden="true">{nombre.charAt(0).toUpperCase()}</span>}
           <div className="account-info"><strong>{nombre}</strong><small>{usuario.role === 'admin' ? 'Administrador' : 'Cliente'}</small></div>
-          <button type="button" className="btn btn-outline-secondary" onClick={handleCerrarSesion}>Cerrar sesión</button>
+          <button type="button" className="btn btn-outline-secondary" onClick={handleCerrarSesion}><Icono nombre="logout" /> Cerrar sesión</button>
         </div>
       </Container>
     </header>

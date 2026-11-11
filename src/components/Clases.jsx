@@ -1,3 +1,4 @@
+import Icono from "./Icono";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Alert, Card, Form } from "react-bootstrap";
@@ -148,8 +149,8 @@ const Clases = () => {
       name: "Acciones",
       cell: (clase) => (
         <div className="d-flex gap-2 py-2">
-          <button type="button" className="btn btn-outline-primary btn-sm" onClick={() => handlerEditar(clase)} disabled={ocupado || Boolean(claseEliminar)}>Editar</button>
-          <button type="button" className="btn btn-outline-danger btn-sm" onClick={() => handlerConfirmarEliminar(clase)} disabled={ocupado || Boolean(claseEliminar)}>Eliminar</button>
+          <button type="button" className="btn btn-outline-primary btn-sm" onClick={() => handlerEditar(clase)} disabled={ocupado || Boolean(claseEliminar)}><Icono nombre="edit" /> Editar</button>
+          <button type="button" className="btn btn-outline-danger btn-sm" onClick={() => handlerConfirmarEliminar(clase)} disabled={ocupado || Boolean(claseEliminar)}><Icono nombre="delete" /> Eliminar</button>
         </div>
       ),
       minWidth: "180px",
@@ -161,23 +162,23 @@ const Clases = () => {
     <>
         <Card className="panel-clases">
           <Card.Body>
-            <Card.Title as="h2">Mis clases</Card.Title>
+            <Card.Title as="h2"><Icono nombre="fitness_center" /> Mis clases</Card.Title>
             <Form.Group className="mb-3" controlId="filtro-clases">
-              <Form.Label>Filtrar por nombre en esta página</Form.Label>
+              <Form.Label><Icono nombre="search" /> Filtrar por nombre en esta página</Form.Label>
               <Form.Control value={filtro} onChange={handlerFiltrar} />
               <Form.Text>El filtro se aplica a las clases de la página visible.</Form.Text>
             </Form.Group>
             {claseEliminar && (
               <Alert variant="warning">
                 <p>¿Eliminar la clase {claseEliminar.nombre}?</p>
-                <button type="button" className="btn btn-danger me-2" onClick={handlerEliminar} disabled={ocupado}>Confirmar eliminación</button>
-                <button type="button" className="btn btn-secondary" onClick={handlerCancelarEliminar} disabled={ocupado}>Cancelar</button>
+                <button type="button" className="btn btn-danger me-2" onClick={handlerEliminar} disabled={ocupado}><Icono nombre="delete" /> Confirmar eliminación</button>
+                <button type="button" className="btn btn-secondary" onClick={handlerCancelarEliminar} disabled={ocupado}><Icono nombre="close" /> Cancelar</button>
               </Alert>
             )}
             {errorCarga && (
               <Alert variant="danger">
                 <p>{errorCarga}</p>
-                <button type="button" className="btn btn-outline-danger" onClick={handlerReintentar}>
+                <button type="button" className="btn btn-outline-danger" onClick={handlerReintentar}><Icono nombre="refresh" />
                   Reintentar
                 </button>
               </Alert>
