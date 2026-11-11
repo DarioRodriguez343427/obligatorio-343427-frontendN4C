@@ -1,3 +1,5 @@
+import { useDispatch } from "react-redux";
+import { aumentarContadorPeticiones, disminuirContadorPeticiones } from "../redux/features/loadingSlice";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Card from "react-bootstrap/Card";
@@ -21,6 +23,7 @@ const esquemaLogin = Yup.object({
 
 const Login = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handlerIrRegistro = () => {
     navigate("/registro");
@@ -36,6 +39,7 @@ const Login = () => {
 
     onSubmit: async (valores) => {
       try {
+        dispatch(aumentarContadorPeticiones());
         const resultado = await loginApi(valores);
         const token = resultado.token;
 
@@ -57,6 +61,8 @@ const Login = () => {
       } catch (error) {
         console.error("Error en login:", error);
         toast.error("No se pudo iniciar sesión. Revisá tus datos.");
+      } finally {
+        dispatch(disminuirContadorPeticiones());
       }
     },
   });

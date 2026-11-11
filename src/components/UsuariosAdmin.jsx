@@ -1,3 +1,4 @@
+import { aumentarContadorPeticiones, disminuirContadorPeticiones } from "../redux/features/loadingSlice";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useFormik } from "formik";
@@ -58,6 +59,7 @@ const DetalleUsuarioAdmin = () => {
         datos.confirmPassword = valores.confirmPassword;
       }
       try {
+        dispatch(aumentarContadorPeticiones());
         const actualizado = await actualizarUsuarioApi(usuario.id, datos);
         dispatch(actualizarUsuario(actualizado));
         formik.resetForm({ values: valoresUsuario(actualizado) });
@@ -65,6 +67,8 @@ const DetalleUsuarioAdmin = () => {
         toast.success("Usuario actualizado");
       } catch (error) {
         toast.error(mensajeErrorApi(error));
+      } finally {
+        dispatch(disminuirContadorPeticiones());
       }
     },
   });
@@ -86,12 +90,14 @@ const DetalleUsuarioAdmin = () => {
   const handlerEliminar = async () => {
     setEliminando(true);
     try {
+      dispatch(aumentarContadorPeticiones());
       await eliminarUsuarioApi(usuario.id);
       dispatch(eliminarUsuario(usuario.id));
       toast.success("Usuario eliminado");
     } catch (error) {
       toast.error(mensajeErrorApi(error));
     } finally {
+      dispatch(disminuirContadorPeticiones());
       setEliminando(false);
     }
   };
@@ -262,6 +268,7 @@ const UsuariosAdmin = () => {
     const controller = new AbortController();
     const cargar = async () => {
       try {
+        dispatch(aumentarContadorPeticiones());
         const lista = await obtenerUsuariosApi(controller.signal);
         if (!controller.signal.aborted) dispatch(cargarUsuarios(lista));
       } catch (error) {
@@ -270,6 +277,7 @@ const UsuariosAdmin = () => {
           toast.error(mensajeErrorApi(error));
         }
       } finally {
+        dispatch(disminuirContadorPeticiones());
         if (!controller.signal.aborted) setCargando(false);
       }
     };
@@ -281,6 +289,7 @@ const UsuariosAdmin = () => {
     const controller = new AbortController();
     const cargar = async () => {
       try {
+        dispatch(aumentarContadorPeticiones());
         const detalle = await obtenerUsuarioApi(
           idSeleccionado,
           controller.signal,
@@ -292,6 +301,7 @@ const UsuariosAdmin = () => {
           toast.error(mensajeErrorApi(error));
         }
       } finally {
+        dispatch(disminuirContadorPeticiones());
         if (!controller.signal.aborted) setCargandoDetalle(false);
       }
     };
