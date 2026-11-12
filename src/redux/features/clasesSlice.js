@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   clases: [], primeraPagina: [], pagina: 1, limite: 10, paginaSolicitada: 1, limiteSolicitado: 10, total: 0,
-  totalPaginas: 0, cargada: false, claseEditando: null,
+  totalPaginas: 0, cargada: false, claseEditando: null, filtro: '',
 };
 const resumirClase = (clase) => ({
   id: clase.id, nombre: clase.nombre, descripcion: clase.descripcion,
@@ -11,6 +11,7 @@ const resumirClase = (clase) => ({
 const clasesSlice = createSlice({
   name: 'clasesSlice', initialState,
   reducers: {
+    modificarFiltroSlice: (state, action) => { state.filtro = action.payload; },
     cargarClasesInicialesSlice: (state, action) => {
       const datos = action.payload;
       state.clases = datos.clases;
@@ -57,5 +58,13 @@ const clasesSlice = createSlice({
     limpiarClasesSlice: () => initialState,
   },
 });
-export const { solicitarPaginaSlice, solicitarLimiteSlice, cargarClasesInicialesSlice, seleccionarClaseSlice, agregarClaseSlice, actualizarClaseSlice, eliminarClaseSlice, completarPaginaSlice, limpiarClasesSlice } = clasesSlice.actions;
+export const { modificarFiltroSlice, solicitarPaginaSlice, solicitarLimiteSlice, cargarClasesInicialesSlice, seleccionarClaseSlice, agregarClaseSlice, actualizarClaseSlice, eliminarClaseSlice, completarPaginaSlice, limpiarClasesSlice } = clasesSlice.actions;
 export default clasesSlice.reducer;
+
+// Tabla y gráfica comparten el filtro sobre la página cargada, sin consultar la API.
+export const filtrarClasesPorNombre = (state) => {
+  const { clases, filtro } = state.clasesSlice;
+  const texto = filtro.trim().toLowerCase();
+  if (texto === '') return clases;
+  return clases.filter((clase) => clase.nombre.toLowerCase().includes(texto));
+};

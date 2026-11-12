@@ -1,6 +1,6 @@
 import Icono from "./Icono";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import { Alert, Card, Form } from "react-bootstrap";
 import { toast } from "react-toastify";
 import DataTable, { createTheme } from "react-data-table-component";
@@ -14,7 +14,7 @@ createTheme("gym", {
 }, "dark");
 import { obtenerClasesApi, eliminarClaseApi } from "../services/clasesServices";
 import {
-  cargarClasesInicialesSlice,
+  cargarClasesInicialesSlice, modificarFiltroSlice, filtrarClasesPorNombre,
   limpiarClasesSlice, solicitarPaginaSlice, solicitarLimiteSlice, seleccionarClaseSlice, eliminarClaseSlice, completarPaginaSlice,
 } from "../redux/features/clasesSlice";
 import {
@@ -37,7 +37,8 @@ const opcionesPaginado = {
 const Clases = () => {
   const dispatch = useDispatch();
   const { clases, total, pagina: paginaActual, limite: limiteActual, cargada, paginaSolicitada: pagina, limiteSolicitado: limite } = useSelector((state) => state.clasesSlice);
-  const [filtro, setFiltro] = useState("");
+  const filtro = useSelector((state) => state.clasesSlice.filtro);
+  const clasesFiltradas = useSelector(filtrarClasesPorNombre, shallowEqual);
   const [cargando, setCargando] = useState(true);
   const [errorCarga, setErrorCarga] = useState("");
   const [intento, setIntento] = useState(0);
@@ -86,8 +87,7 @@ const Clases = () => {
     return () => controller.abort();
   }, [dispatch, pagina, limite, intento, cargada, paginaActual, limiteActual]);
 
-  const handlerFiltrar = (evento) => setFiltro(evento.target.value);
-  const clasesFiltradas = clases.filter((clase) => clase.nombre.toLowerCase().includes(filtro.trim().toLowerCase()));
+  const handlerFiltrar = (evento) => dispatch(modificarFiltroSlice(evento.target.value));
 
   const handlerCambiarPagina = (nuevaPagina) => {
     setIntento(0);
