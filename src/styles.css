@@ -29,6 +29,8 @@ p { color: #adb5c2; line-height: 1.6; }
 .form-text, .text-muted { color: #a4adba !important; font-size: .78rem; }
 .form-control::file-selector-button { background: #303640; color: #eef0f3; }
 textarea.form-control { resize: vertical; }
+#climaFecha { color-scheme: light; background-color: #fff; color: #212529; }
+#climaFecha:disabled { background-color: #e9ecef; color: #6c757d; }
 .btn { border-radius: 7px; font-size: .85rem; font-weight: 600; padding: .6rem 1rem; }
 .btn-sm { padding: .42rem .72rem; font-size: .8rem; }
 .btn-primary { --bs-btn-bg: #f5c518; --bs-btn-color: #17191d; --bs-btn-border-color: #f5c518; --bs-btn-hover-bg: #ffdb50; --bs-btn-hover-color: #17191d; --bs-btn-hover-border-color: #ffdb50; --bs-btn-active-bg: #e0b20c; --bs-btn-active-color: #17191d; --bs-btn-active-border-color: #e0b20c; --bs-btn-disabled-bg: #f5c518; --bs-btn-disabled-color: #17191d; --bs-btn-disabled-border-color: #f5c518; }
